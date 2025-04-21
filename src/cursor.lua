@@ -11,6 +11,7 @@ function Cursor:Create(grid)
   FreeMesh(mesh)
   local mat = EntityMaterial(self.entity, 1)
   SetMaterialType(mat, MATERIAL_ALPHA)
+  SetMaterialFlag(mat, FLAG_LIGHTING, false)
   SetMaterialFlag(mat, FLAG_VERTEXCOLORS, true)
   return self
 end
