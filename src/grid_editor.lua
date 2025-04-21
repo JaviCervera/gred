@@ -19,6 +19,7 @@ function GridEditor:update()
   if KeyHit(KEY_ENTER) then self.editing = not self.editing end
   if KeyHit(KEY_F) then self.grid:toggleFiltering() end
   if KeyHit(KEY_L) then self:toggleLighting() end
+  if KeyHit(KEY_R) then self.grid:toggleWireframe() end
   if self.editing then
     if KeyHit(KEY_F2) then
       local selected = RequestFile("Grid filename", "*.grd", false, self.filename)

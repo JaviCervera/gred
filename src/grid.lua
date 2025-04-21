@@ -16,6 +16,7 @@ function Grid:Create(tiles_x, tiles_y, tiles_z, ceiling_tex_retriever, wall_tex_
   self.floor_tex_retriever = floor_tex_retriever
   self.tex_path = tex_path
   self.filtering = true
+  self.wireframe = false
   return self
 end
 
@@ -104,6 +105,7 @@ function Grid:_updateModel()
   local mesh = CreateGridMesh(self)
   self.model = CreateModel(mesh)
   self:_applyFiltering()
+  self:_applyWireframe()
   --[[
   local inversed = CreateModel(mesh)
   SetEntityParent(inversed, self.model)
@@ -130,5 +132,22 @@ function Grid:_applyFiltering()
   if self.filtering then mode = FILTER_ANISOTROPIC end
   for i = 1, EntityNumMaterials(self.model) do
     SetMaterialFilterMode(EntityMaterial(self.model, i), mode)
+  end
+end
+
+function Grid:toggleWireframe()
+  self.wireframe = not self.wireframe
+  self:_applyWireframe()
+end
+
+function Grid:wireframeEnabled()
+  return self.wireframe
+end
+
+function Grid:_applyWireframe()
+  local mode = RENDER_FILLED
+  if self.wireframe then mode = RENDER_WIREFRAME end
+  for i = 1, EntityNumMaterials(self.model) do
+    SetMaterialRenderMode(EntityMaterial(self.model, i), mode)
   end
 end

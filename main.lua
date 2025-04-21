@@ -58,7 +58,9 @@ function main()
         COLOR_WHITE)
       DrawText(
         font,
-        "[F] " .. EnableDisableText(grid:filteringEnabled()) .. " texture filtering -- " .. "[L] " .. EnableDisableText(grid_editor:lightingEnabled()) .. " lighting",
+        "[F] " .. EnableDisableText(grid:filteringEnabled()) .. " texture filtering -- " ..
+        "[L] " .. EnableDisableText(grid_editor:lightingEnabled()) .. " lighting -- " ..
+        "[R] " .. EnableDisableText(grid:wireframeEnabled()) .. " wireframe",
         8,
         24,
         COLOR_WHITE)
