@@ -20,7 +20,7 @@ function Camera:update(editing)
       EntityX(self.cursor.entity),
       EntityY(self.cursor.entity),
       EntityZ(self.cursor.entity))
-    MoveEntity(self.entity, 0, 0, -Max(2, (self.distance + CursorWheel())))
+    MoveEntity(self.entity, 0, 0, -Max(2, (self.distance - CursorZ())))
     SetEntityRotation(self.entity, 89.9, 0, 0)
     self.was_editing = true
   else
