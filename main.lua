@@ -1,9 +1,13 @@
 import("src/_class.lua")
 import("src/camera.lua")
+import("src/command/place_flag.lua")
+import("src/command/remove_flag.lua")
 import("src/command/remove_tile.lua")
 import("src/command/set_tile.lua")
 import("src/create_grid_mesh.lua")
 import("src/cursor.lua")
+import("src/flag.lua")
+import("src/flag_manager.lua")
 import("src/grid.lua")
 import("src/grid_editor.lua")
 import("src/list.lua")
@@ -30,8 +34,9 @@ function main()
 
   local grid = Grid:Create(64, 16, 64, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, TEX_PATH)
   local cursor = Cursor:Create(grid)
+  local flag_mgr = FlagManager:Create()
   local undo_mgr = UndoManager:Create()
-  local grid_editor = GridEditor:Create(grid, cursor, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, undo_mgr)
+  local grid_editor = GridEditor:Create(grid, cursor, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, flag_mgr, undo_mgr)
   local cam = Camera:Create(cursor)
 
   while not ScreenShouldClose() do
@@ -44,6 +49,7 @@ function main()
       wall_tex_viewer:update()
       floor_tex_viewer:update()
     end
+    flag_mgr:update(grid_editor.current_flag)
 
     DrawWorld()
     if grid_editor.editing then
@@ -63,6 +69,14 @@ function main()
         "[R] " .. EnableDisableText(grid:wireframeEnabled()) .. " wireframe",
         8,
         24,
+        COLOR_WHITE)
+      DrawText(
+        font,
+        "[U/I] Select flag number (current: " .. grid_editor.current_flag .. ") -- " ..
+        "[P] Place flag -- " ..
+        "[O] Delete flag",
+        8,
+        40,
         COLOR_WHITE)
       DrawText(
         font,

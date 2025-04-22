@@ -1,16 +1,34 @@
-function SaveGrid(grid, filename)
+function SaveGrid(grid, flag_mgr, filename)
   local texs = _GridTextures(grid)
-  local memblock = CreateMemblock(_GridMemblockSize(grid, texs))
+  local memblock = CreateMemblock(_GridMemblockSize(grid, flag_mgr, texs))
   local writer = MemblockWriter:Create(memblock)
   _WriteGridHeader(grid, writer)
   _WriteGridTextures(texs, writer)
   _WriteGridTiles(grid, texs, writer)
+  _WriteGridFlags(flag_mgr, writer)
   SaveMemblock(memblock, filename)
   FreeMemblock(memblock)
 end
 
-function _GridMemblockSize(grid, texs)
-  return _GridHeaderSize(grid) + _GridTexturesSize(texs) + _GridTilesSize(grid)
+function _GridTextures(grid)
+  local texs = {}
+  for x = 1, grid:tilesX() do
+    for y = 1, grid:tilesY() do
+      for z = 1, grid:tilesZ() do
+        local ceiling_tex = grid:ceilingTextureName(x, y, z)
+        local wall_tex = grid:wallTextureName(x, y, z)
+        local floor_tex = grid:floorTextureName(x, y, z)
+        if ListIndex(texs, ceiling_tex) == nil then texs[#texs + 1] = ceiling_tex end
+        if ListIndex(texs, wall_tex) == nil then texs[#texs + 1] = wall_tex end
+        if ListIndex(texs, floor_tex) == nil then texs[#texs + 1] = floor_tex end
+      end
+    end
+  end
+  return texs
+end
+
+function _GridMemblockSize(grid, flag_mgr, texs)
+  return _GridHeaderSize(grid) + _GridTexturesSize(texs) + _GridTilesSize(grid) + _GridFlagsSize(flag_mgr)
 end
 
 function _GridHeaderSize(grid)
@@ -41,21 +59,8 @@ function _GridNumTilesSet(grid)
   return count
 end
 
-function _GridTextures(grid)
-  local texs = {}
-  for x = 1, grid:tilesX() do
-    for y = 1, grid:tilesY() do
-      for z = 1, grid:tilesZ() do
-        local ceiling_tex = grid:ceilingTextureName(x, y, z)
-        local wall_tex = grid:wallTextureName(x, y, z)
-        local floor_tex = grid:floorTextureName(x, y, z)
-        if ListIndex(texs, ceiling_tex) == nil then texs[#texs + 1] = ceiling_tex end
-        if ListIndex(texs, wall_tex) == nil then texs[#texs + 1] = wall_tex end
-        if ListIndex(texs, floor_tex) == nil then texs[#texs + 1] = floor_tex end
-      end
-    end
-  end
-  return texs
+function _GridFlagsSize(flag_mgr)
+  return 1 + flag_mgr:size() * 4
 end
 
 function _WriteGridHeader(grid, writer)
@@ -93,4 +98,18 @@ function _WriteGridTile(grid, x, y, z, texs, writer)
     writer:writeByte(ListIndex(texs, grid:wallTextureName(x, y, z)))
     writer:writeByte(ListIndex(texs, grid:floorTextureName(x, y, z)))
   end
+end
+
+function _WriteGridFlags(flag_mgr, writer)
+  writer:writeByte(flag_mgr:size())
+  for i = 1, flag_mgr:size() do
+    _WriteGridFlag(flag_mgr:at(i), writer)
+  end
+end
+
+function _WriteGridFlag(flag, writer)
+  writer:writeByte(flag.id)
+  writer:writeByte(flag:x())
+  writer:writeByte(flag:y())
+  writer:writeByte(flag:z())
 end

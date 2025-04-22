@@ -42,3 +42,8 @@ function UndoManager:update()
     if KeyHit(KEY_Y) then self:redo() end
   end
 end
+
+function UndoManager:reset()
+  self._undo = {}
+  self._redo = {}
+end

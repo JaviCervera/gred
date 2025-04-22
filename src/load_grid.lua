@@ -1,4 +1,4 @@
-function LoadGrid(grid, filename)
+function LoadGrid(grid, flag_mgr, filename)
   local memblock = LoadMemblock(filename)
   local reader = MemblockReader:Create(memblock)
   local version = reader:readByte()
@@ -12,6 +12,11 @@ function LoadGrid(grid, filename)
     _LoadGridTile(grid, texs, reader)
   end
   grid:_updateModel()
+  flag_mgr:clear()
+  local num_flags = reader:readByte()
+  for i = 1, num_flags do
+    _LoadGridFlag(flag_mgr, reader)
+  end
   FreeMemblock(memblock)
 end
 
@@ -33,4 +38,12 @@ function _LoadGridTile(grid, texs, reader)
   local wall_tex = texs[reader:readByte()]
   local floor_tex = texs[reader:readByte()]
   grid:setTile(x, y, z, type, ceiling_tex, wall_tex, floor_tex, false)
+end
+
+function _LoadGridFlag(flag_mgr, reader)
+  local id = reader:readByte()
+  local x = reader:readByte()
+  local y = reader:readByte()
+  local z = reader:readByte()
+  flag_mgr:place(id, x, y, z)
 end

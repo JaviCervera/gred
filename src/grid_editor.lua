@@ -1,6 +1,6 @@
 GridEditor = class()
 
-function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriever, floor_tex_retriever, undo_mgr)
+function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriever, floor_tex_retriever, flag_mgr, undo_mgr)
   self = self:New()
   self.filename = nil
   self.grid = grid
@@ -11,6 +11,8 @@ function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriev
   self.undo_mgr = undo_mgr
   self.editing = true
   self.mode = Grid.TILE
+  self.current_flag = 1
+  self.flag_mgr = flag_mgr
   self.lights = nil
   return self
 end
@@ -20,12 +22,17 @@ function GridEditor:update()
   if KeyHit(KEY_F) then self.grid:toggleFiltering() end
   if KeyHit(KEY_L) then self:toggleLighting() end
   if KeyHit(KEY_R) then self.grid:toggleWireframe() end
+  if KeyHit(KEY_U) then self.current_flag = Max(1, self.current_flag - 1) end
+  if KeyHit(KEY_I) then self.current_flag = Min(100, self.current_flag + 1) end
+  if KeyHit(KEY_P) then self:placeFlag() end
+  if KeyHit(KEY_O) then self:deleteFlag() end
   if self.editing then
     if KeyHit(KEY_F2) then
       local selected = RequestFile("Grid filename", "*.grd", false, self.filename)
       if selected ~= "" then
-        LoadGrid(self.grid, selected)
+        LoadGrid(self.grid, self.flag_mgr, selected)
         self.filename = selected
+        self.undo_mgr:reset()
       end
     end
     if KeyHit(KEY_F3) then
@@ -33,7 +40,7 @@ function GridEditor:update()
         local selected = RequestFile("Grid filename", "*.grd", true, self.filename)
         if selected ~= "" then self.filename = selected end
       end
-      if self.filename then SaveGrid(self.grid, self.filename) end
+      if self.filename then SaveGrid(self.grid, self.flag_mgr, self.filename) end
     end
     if KeyHit(KEY_F4) then
       self.mode = self.mode + 1
@@ -80,4 +87,17 @@ end
 
 function GridEditor:lightingEnabled()
   return self.lights ~= nil
+end
+
+function GridEditor:placeFlag()
+  self.undo_mgr:addUndo(PlaceFlag(
+    self.current_flag,
+    EntityX(self.cursor.entity),
+    EntityY(self.cursor.entity),
+    EntityZ(self.cursor.entity),
+    self.flag_mgr))
+end
+
+function GridEditor:deleteFlag()
+  self.undo_mgr:addUndo(RemoveFlag(self.current_flag, self.flag_mgr))
 end
