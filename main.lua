@@ -58,7 +58,7 @@ function main()
       floor_tex_viewer:draw(ScreenWidth() - 144, 304, 128, 128)
       DrawText(
         font,
-        "[F2] Load -- [F3] Save -- [F4] Mode: " .. EditModeName(grid_editor.mode) .. " -- [ENTER] Preview",
+        "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " .. EditModeName(grid_editor.mode) .. " -- [ENTER] Preview",
         8,
         8,
         COLOR_WHITE)

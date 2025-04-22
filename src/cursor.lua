@@ -4,7 +4,6 @@ function Cursor:Create(grid)
   self = self:New()
   local mesh = CreateCubeMesh()
   self.entity = CreateModel(mesh)
-  SetEntityPosition(self.entity, grid:tilesX() / 2, grid:tilesY() / 2, grid:tilesZ() / 2)
   self.grid = grid
   self.alpha = 0.5
   self.alpha_dir = 1
@@ -13,7 +12,12 @@ function Cursor:Create(grid)
   SetMaterialType(mat, MATERIAL_ALPHA)
   SetMaterialFlag(mat, FLAG_LIGHTING, false)
   SetMaterialFlag(mat, FLAG_VERTEXCOLORS, true)
+  self:reset()
   return self
+end
+
+function Cursor:reset()
+  SetEntityPosition(self.entity, self.grid:tilesX() / 2, self.grid:tilesY() / 2, self.grid:tilesZ() / 2)
 end
 
 function Cursor:update(editing)

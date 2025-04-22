@@ -2,19 +2,25 @@ GridEditor = class()
 
 function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriever, floor_tex_retriever, flag_mgr, undo_mgr)
   self = self:New()
-  self.filename = nil
   self.grid = grid
   self.cursor = cursor
   self.ceiling_tex_retriever = ceiling_tex_retriever
   self.wall_tex_retriever = wall_tex_retriever
   self.floor_tex_retriever = floor_tex_retriever
+  self.flag_mgr = flag_mgr
   self.undo_mgr = undo_mgr
+  self.lights = nil
+  self:reset()
+  return self
+end
+
+function GridEditor:reset()
+  self.filename = nil
   self.editing = true
   self.mode = Grid.TILE
   self.current_flag = 1
-  self.flag_mgr = flag_mgr
-  self.lights = nil
-  return self
+  self.grid:reset(self.grid:tilesX(), self.grid:tilesY(), self.grid:tilesZ())
+  self.cursor:reset()
 end
 
 function GridEditor:update()
@@ -27,6 +33,7 @@ function GridEditor:update()
   if KeyHit(KEY_P) then self:placeFlag() end
   if KeyHit(KEY_O) then self:deleteFlag() end
   if self.editing then
+    if KeyHit(KEY_F1) then self:reset() end
     if KeyHit(KEY_F2) then
       local selected = RequestFile("Grid filename", "*.grd", false, self.filename)
       if selected ~= "" then
