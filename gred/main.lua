@@ -19,7 +19,7 @@ import("src/save_grid.lua")
 import("src/texture_viewer.lua")
 import("src/undo_manager.lua")
 
-TEX_PATH = "textures/"
+TEX_PATH = "../textures/"
 
 function main()
   OpenConsole()
@@ -52,6 +52,7 @@ function main()
     flag_mgr:update(grid_editor.current_flag)
 
     DrawWorld()
+    flag_mgr:drawFlagNumbers(font, cam.entity)
     if grid_editor.editing then
       ceiling_tex_viewer:draw(ScreenWidth() - 144, 16, 128, 128)
       wall_tex_viewer:draw(ScreenWidth() - 144, 160, 128, 128)

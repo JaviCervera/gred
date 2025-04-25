@@ -24,6 +24,16 @@ function FlagManager:update(active_flag)
   end
 end
 
+function FlagManager:drawFlagNumbers(font, cam)
+  for _, flag in ipairs(self.lst) do
+    WorldToScreen(cam, EntityX(flag.entity), EntityY(flag.entity), EntityZ(flag.entity))
+    local width = TextWidth(font, flag.id)
+    local height = TextHeight(font, flag.id)
+    DrawRect(PointX(), PointY(), width, height, COLOR_BLACK)
+    DrawText(font, flag.id, PointX(), PointY(), COLOR_YELLOW)
+  end
+end
+
 function FlagManager:clear()
   for _, flag in ipairs(self.lst) do
     flag:destroy()
