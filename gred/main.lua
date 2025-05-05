@@ -9,7 +9,7 @@ import("src/cursor.lua")
 import("src/flag.lua")
 import("src/flag_manager.lua")
 import("src/grid.lua")
-import("src/grid_editor.lua")
+import("src/grid_manager.lua")
 import("src/list.lua")
 import("src/load_grid.lua")
 import("src/memblock_reader.lua")
@@ -36,44 +36,44 @@ function main()
   local cursor = Cursor:Create(grid)
   local flag_mgr = FlagManager:Create()
   local undo_mgr = UndoManager:Create()
-  local grid_editor = GridEditor:Create(grid, cursor, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, flag_mgr, undo_mgr)
+  local grid_mgr = GridManager:Create(grid, cursor, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, flag_mgr, undo_mgr)
   local cam = Camera:Create(cursor)
 
   while not ScreenShouldClose() do
     undo_mgr:update()
-    cursor:update(grid_editor.editing)
-    cam:update(grid_editor.editing)
-    grid_editor:update()
-    if grid_editor.editing then
+    cursor:update(grid_mgr.editing)
+    cam:update(grid_mgr.editing)
+    grid_mgr:update()
+    if grid_mgr.editing then
       ceiling_tex_viewer:update()
       wall_tex_viewer:update()
       floor_tex_viewer:update()
     end
-    flag_mgr:update(grid_editor.current_flag)
+    flag_mgr:update(grid_mgr.current_flag)
 
     DrawWorld()
     flag_mgr:drawFlagNumbers(font, cam.entity)
-    if grid_editor.editing then
+    if grid_mgr.editing then
       ceiling_tex_viewer:draw(ScreenWidth() - 144, 16, 128, 128)
       wall_tex_viewer:draw(ScreenWidth() - 144, 160, 128, 128)
       floor_tex_viewer:draw(ScreenWidth() - 144, 304, 128, 128)
       DrawText(
         font,
-        "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " .. EditModeName(grid_editor.mode) .. " -- [ENTER] Preview",
+        "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " .. EditModeName(grid_mgr.mode) .. " -- [ENTER] Preview",
         8,
         8,
         COLOR_WHITE)
       DrawText(
         font,
         "[F] " .. EnableDisableText(grid:filteringEnabled()) .. " texture filtering -- " ..
-        "[L] " .. EnableDisableText(grid_editor:lightingEnabled()) .. " lighting -- " ..
+        "[L] " .. EnableDisableText(grid_mgr:lightingEnabled()) .. " lighting -- " ..
         "[R] " .. EnableDisableText(grid:wireframeEnabled()) .. " wireframe",
         8,
         24,
         COLOR_WHITE)
       DrawText(
         font,
-        "[U/I] Select flag number (current: " .. grid_editor.current_flag .. ") -- " ..
+        "[U/I] Select flag number (current: " .. grid_mgr.current_flag .. ") -- " ..
         "[P] Place flag -- " ..
         "[O] Delete flag",
         8,

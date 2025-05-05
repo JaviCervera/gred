@@ -1,6 +1,6 @@
-GridEditor = class()
+GridManager = class()
 
-function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriever, floor_tex_retriever, flag_mgr, undo_mgr)
+function GridManager:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriever, floor_tex_retriever, flag_mgr, undo_mgr)
   self = self:New()
   self.grid = grid
   self.cursor = cursor
@@ -14,7 +14,7 @@ function GridEditor:Create(grid, cursor, ceiling_tex_retriever, wall_tex_retriev
   return self
 end
 
-function GridEditor:reset()
+function GridManager:reset()
   self.filename = nil
   self.editing = true
   self.mode = Grid.TILE
@@ -23,7 +23,7 @@ function GridEditor:reset()
   self.cursor:reset()
 end
 
-function GridEditor:update()
+function GridManager:update()
   if KeyHit(KEY_ENTER) then self.editing = not self.editing end
   if KeyHit(KEY_F) then self.grid:toggleFiltering() end
   if KeyHit(KEY_L) then self:toggleLighting() end
@@ -76,7 +76,7 @@ function GridEditor:update()
   end
 end
 
-function GridEditor:toggleLighting()
+function GridManager:toggleLighting()
   if not self:lightingEnabled() then
     self.lights = CreateEntity()
     SetEntityParent(CreateLight(LIGHT_DIRECTIONAL), self.lights)
@@ -92,11 +92,11 @@ function GridEditor:toggleLighting()
   end
 end
 
-function GridEditor:lightingEnabled()
+function GridManager:lightingEnabled()
   return self.lights ~= nil
 end
 
-function GridEditor:placeFlag()
+function GridManager:placeFlag()
   self.undo_mgr:addUndo(PlaceFlag(
     self.current_flag,
     EntityX(self.cursor.entity),
@@ -105,6 +105,6 @@ function GridEditor:placeFlag()
     self.flag_mgr))
 end
 
-function GridEditor:deleteFlag()
+function GridManager:deleteFlag()
   self.undo_mgr:addUndo(RemoveFlag(self.current_flag, self.flag_mgr))
 end
