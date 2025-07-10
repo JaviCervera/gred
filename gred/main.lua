@@ -1,3 +1,5 @@
+load("dialogs")
+
 import("src/_class.lua")
 import("src/camera.lua")
 import("src/command/place_flag.lua")
