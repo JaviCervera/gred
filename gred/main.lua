@@ -4,6 +4,10 @@ import("src/command/place_flag.lua")
 import("src/command/remove_flag.lua")
 import("src/command/remove_tile.lua")
 import("src/command/set_tile.lua")
+import("src/grid_mesh/create_stairs_mesh.lua")
+import("src/grid_mesh/grid_mesh.lua")
+import("src/grid_mesh/grid_surface.lua")
+import("src/grid_mesh/grid_vertex.lua")
 import("src/create_grid_mesh.lua")
 import("src/cursor.lua")
 import("src/flag.lua")
@@ -22,10 +26,9 @@ import("src/undo_manager.lua")
 TEX_PATH = "../textures/"
 
 function main()
-  OpenConsole()
   OpenScreen(1024, 768, DesktopDepth(), SCREEN_RESIZABLE + SCREEN_VSYNC)
 
-  local font = LoadFont("system.xml")
+  local font = LoadFont("FSEX300.ttf", 16)
 
   local texture_names = ReadTextures(TEX_PATH)
   local ceiling_tex_viewer = TextureViewer:Create(texture_names, 1, TEX_PATH, KEY_W, KEY_E)
