@@ -136,8 +136,10 @@ function Grid:_applyFiltering()
 end
 
 function Grid:toggleWireframe()
-  self.wireframe = not self.wireframe
-  self:_applyWireframe()
+  if self.model then
+    self.wireframe = not self.wireframe
+    self:_applyWireframe()
+  end
 end
 
 function Grid:wireframeEnabled()
