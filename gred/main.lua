@@ -24,13 +24,19 @@ import("src/read_textures.lua")
 import("src/save_grid.lua")
 import("src/texture_viewer.lua")
 import("src/undo_manager.lua")
+import("src/util.lua")
 
 TEX_PATH = "../textures/"
+FONT_SIZE = 20
+COLOR_WHITE = Color()
+COLOR_WHITE.r = 255
+COLOR_WHITE.g = 255
+COLOR_WHITE.b = 255
+COLOR_WHITE.a = 255
 
 function main()
-  OpenScreen(1024, 768, DesktopDepth(), SCREEN_RESIZABLE + SCREEN_VSYNC)
-
-  local font = LoadFont("FSEX300.ttf", 16)
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE)
+  InitWindow(1024, 768, "GRED")
 
   local texture_names = ReadTextures(TEX_PATH)
   local ceiling_tex_viewer = TextureViewer:Create(texture_names, 1, TEX_PATH, KEY_W, KEY_E)
@@ -44,7 +50,7 @@ function main()
   local grid_mgr = GridManager:Create(grid, cursor, ceiling_tex_viewer, wall_tex_viewer, floor_tex_viewer, flag_mgr, undo_mgr)
   local cam = Camera:Create(cursor)
 
-  while not ScreenShouldClose() do
+  while not WindowShouldClose() do
     undo_mgr:update()
     cursor:update(grid_mgr.editing)
     cam:update(grid_mgr.editing)
@@ -56,43 +62,55 @@ function main()
     end
     flag_mgr:update(grid_mgr.current_flag)
 
-    DrawWorld()
+    BeginDrawing()
+    ClearBackground(GetColor(0x0000FFFF))
+    BeginMode3D(cam.cam)
+    cursor:draw()
+    EndMode3D()
     flag_mgr:drawFlagNumbers(font, cam.entity)
     if grid_mgr.editing then
-      ceiling_tex_viewer:draw(ScreenWidth() - 144, 16, 128, 128)
-      wall_tex_viewer:draw(ScreenWidth() - 144, 160, 128, 128)
-      floor_tex_viewer:draw(ScreenWidth() - 144, 304, 128, 128)
+      ceiling_tex_viewer:draw(GetScreenWidth() - 144, 16, 128, 128)
+      wall_tex_viewer:draw(GetScreenWidth() - 144, 160, 128, 128)
+      floor_tex_viewer:draw(GetScreenWidth() - 144, 304, 128, 128)
+      local pos = Vector2()
+      pos.x = 4
+      pos.y = 4
       DrawText(
-        font,
         "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " .. EditModeName(grid_mgr.mode) .. " -- [ENTER] Preview",
-        8,
-        8,
+        4,
+        4,
+        FONT_SIZE,
         COLOR_WHITE)
       DrawText(
-        font,
         "[F] " .. EnableDisableText(grid:filteringEnabled()) .. " texture filtering -- " ..
         "[L] " .. EnableDisableText(grid_mgr:lightingEnabled()) .. " lighting -- " ..
         "[R] " .. EnableDisableText(grid:wireframeEnabled()) .. " wireframe",
         8,
-        24,
+        28,
+        FONT_SIZE,
         COLOR_WHITE)
       DrawText(
-        font,
         "[U/I] Select flag number (current: " .. grid_mgr.current_flag .. ") -- " ..
         "[P] Place flag -- " ..
         "[O] Delete flag",
         8,
-        40,
+        52,
+        FONT_SIZE,
         COLOR_WHITE)
       DrawText(
-        font,
-        "Cursor Position " .. Int(EntityX(cursor.entity)) .. "x" .. Int(EntityY(cursor.entity)) .. "x" .. Int(EntityZ(cursor.entity)),
+        "Cursor Position " ..
+        math.floor(cursor.position.x) .. "x" ..
+        math.floor(cursor.position.y) .. "x" ..
+        math.floor(cursor.position.z),
         8,
-        ScreenHeight() - 24,
+        GetScreenHeight() - 24,
+        FONT_SIZE,
         COLOR_WHITE)
+      -- TODO: Draw grid
     end
-    RefreshScreen()
+    EndDrawing()
   end
+  CloseWindow()
 end
 
 function EditModeName(mode_id)
