@@ -37,9 +37,9 @@ function UndoManager:redo()
 end
 
 function UndoManager:update()
-  if KeyDown(KEY_LCONTROL) or KeyDown(KEY_RCONTROL) then
-    if KeyHit(KEY_Z) then self:undo() end
-    if KeyHit(KEY_Y) then self:redo() end
+  if IsKeyDown(KEY_LEFT_CONTROL) or IsKeyDown(KEY_RIGHT_CONTROL) then
+    if IsKeyPressed(KEY_Z) then self:undo() end
+    if IsKeyPressed(KEY_Y) then self:redo() end
   end
 end
 
