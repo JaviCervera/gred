@@ -5,39 +5,46 @@ Camera.TURN_SPEED = 90
 
 function Camera:Create(cursor)
   self = self:New()
-  self.entity = CreateCamera()
+  self.cam = Camera3D()
+  self.cam.up.x = 0
+  self.cam.up.y = 0
+  self.cam.up.z = -1
+  self.cam.fovy = 60
+  self.cam.projection = CAMERA_PERSPECTIVE
   self.cursor = cursor
   self.distance = 6
   self.was_editing = true
-  SetCameraRange(self.entity, 0.1, 100)
   return self
 end
 
 function Camera:update(editing)
   if editing then
-    SetEntityPosition(
-      self.entity,
-      EntityX(self.cursor.entity),
-      EntityY(self.cursor.entity),
-      EntityZ(self.cursor.entity))
-    MoveEntity(self.entity, 0, 0, -Max(2, (self.distance - CursorZ())))
-    SetEntityRotation(self.entity, 89.9, 0, 0)
+    self.distance = math.max(2, (self.distance - GetMouseWheelMove()))
+    self.cam.position.x = self.cursor.position.x
+    self.cam.position.y = self.cursor.position.y + self.distance
+    self.cam.position.z = self.cursor.position.z
+    self.cam.target.x = self.cursor.position.x
+    self.cam.target.y = self.cursor.position.y
+    self.cam.target.z = self.cursor.position.z
     self.was_editing = true
   else
     if self.was_editing then
-      SetEntityPosition(
-        self.entity,
-        EntityX(self.cursor.entity),
-        EntityY(self.cursor.entity),
-        EntityZ(self.cursor.entity))
-      SetEntityRotation(self.entity, 0, 0, 0)
+      self.cam.position.x = self.cursor.position.x
+      self.cam.position.y = self.cursor.position.y
+      self.cam.position.z = self.cursor.position.z
+      self.cam.target.x = self.cursor.position.x
+      self.cam.target.y = self.cursor.position.y
+      self.cam.target.z = self.cursor.position.z - 1
     end
-    if KeyDown(KEY_UP) then MoveEntity(self.entity, 0, 0, self.MOVE_SPEED * DeltaTime()) end
-    if KeyDown(KEY_DOWN) then MoveEntity(self.entity, 0, 0, -self.MOVE_SPEED * DeltaTime()) end
-    if KeyDown(KEY_LEFT) then TurnEntity(self.entity, 0, -self.TURN_SPEED * DeltaTime(), 0) end
-    if KeyDown(KEY_RIGHT) then TurnEntity(self.entity, 0, self.TURN_SPEED * DeltaTime(), 0) end
-    if KeyDown(KEY_Q) then TranslateEntity(self.entity, 0, self.MOVE_SPEED * DeltaTime(), 0) end
-    if KeyDown(KEY_A) then TranslateEntity(self.entity, 0, -self.MOVE_SPEED * DeltaTime(), 0) end
+    local movement = Vector3()
+    local rotation = Vector3()
+    if IsKeyDown(KEY_UP) then movement.x = movement.x - self.MOVE_SPEED * GetFrameTime() end
+    if IsKeyDown(KEY_DOWN) then movement.x = movement.x + self.MOVE_SPEED * GetFrameTime() end
+    if IsKeyDown(KEY_LEFT) then rotation.y = movement.y + self.TURN_SPEED * GetFrameTime() end
+    if IsKeyDown(KEY_RIGHT) then rotation.y = movement.y - self.TURN_SPEED * GetFrameTime() end
+    if IsKeyDown(KEY_Q) then movement.y = movement.y + self.MOVE_SPEED * GetFrameTime() end
+    if IsKeyDown(KEY_A) then movement.y = movement.y - self.MOVE_SPEED * GetFrameTime() end
+    UpdateCameraPro(self.cam, movement, rotation, 1)
     self.was_editing = false
   end
 end
