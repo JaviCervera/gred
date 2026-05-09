@@ -3,11 +3,11 @@ package command;
 import FlagManager;
 
 class PlaceFlagCommand implements ICommand {
-	var id:Int;
-	var x:Float;
-	var y:Float;
-	var z:Float;
-	var mgr:FlagManager;
+	final id:Int;
+	final x:Float;
+	final y:Float;
+	final z:Float;
+	final mgr:FlagManager;
 
 	public function new(id:Int, x:Float, y:Float, z:Float, mgr:FlagManager) {
 		this.id = id;
@@ -22,16 +22,14 @@ class PlaceFlagCommand implements ICommand {
 		if (mgr.findIndex(id) == null) {
 			undoCmd = new RemoveFlagCommand(id, mgr);
 		} else {
-			var flag = mgr.find(id);
-			if (flag == null) return null;
-			if (flag.x() == x && flag.y() == y && flag.z() == z) return null;
+			final flag = mgr.find(id);
+			if (flag == null)
+				return null;
+			if (flag.x() == x && flag.y() == y && flag.z() == z)
+				return null;
 			undoCmd = new PlaceFlagCommand(id, flag.x(), flag.y(), flag.z(), mgr);
 		}
 		mgr.place(id, x, y, z);
 		return undoCmd;
-	}
-
-	public static function placeFlag(id:Int, x:Float, y:Float, z:Float, flagMgr:FlagManager):Null<ICommand> {
-		return new PlaceFlagCommand(id, x, y, z, flagMgr).execute();
 	}
 }

@@ -1,10 +1,11 @@
 class Flag {
-	static var _activeTexture:Null<ITexture> = null;
-	static var _inactiveTexture:Null<ITexture> = null;
+	private static var activeTexture:Null<ITexture> = null;
+	private static var inactiveTexture:Null<ITexture> = null;
 
-	public var id:Int;
-	public var entity:IBillboardSceneNode;
-	public var active:Bool;
+	public final id:Int;
+	public final entity:IBillboardSceneNode;
+
+	private var active:Bool;
 
 	public function new(id:Int, x:Float, y:Float, z:Float) {
 		this.id = id;
@@ -35,14 +36,16 @@ class Flag {
 	}
 
 	public function setActive(active:Bool):Void {
-		if (_activeTexture == null) _activeTexture = Cs.loadTexture("icons/flag_red.png");
-		if (_inactiveTexture == null) _inactiveTexture = Cs.loadTexture("icons/flag_orange.png");
+		if (activeTexture == null)
+			activeTexture = Cs.loadTexture("icons/flag_red.png");
+		if (inactiveTexture == null)
+			inactiveTexture = Cs.loadTexture("icons/flag_orange.png");
 		if (active != this.active) {
 			this.active = active;
 			if (active) {
-				Cs.setMaterialTexture(Cs.entityMaterial(entity, 1), 1, _activeTexture);
+				Cs.setMaterialTexture(Cs.entityMaterial(entity, 1), 1, activeTexture);
 			} else {
-				Cs.setMaterialTexture(Cs.entityMaterial(entity, 1), 1, _inactiveTexture);
+				Cs.setMaterialTexture(Cs.entityMaterial(entity, 1), 1, inactiveTexture);
 			}
 		}
 	}

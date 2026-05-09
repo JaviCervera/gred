@@ -1,8 +1,8 @@
 import command.ICommand;
 
 class UndoManager {
-	var _undo:Array<ICommand>;
-	var _redo:Array<ICommand>;
+	final _undo:Array<ICommand>;
+	final _redo:Array<ICommand>;
 
 	public function new() {
 		_undo = [];
@@ -12,7 +12,7 @@ class UndoManager {
 	public function addUndo(command:Null<ICommand>):Void {
 		if (command != null) {
 			_undo.push(command);
-			_redo = [];
+			_redo.resize(0);
 		}
 	}
 
@@ -28,7 +28,8 @@ class UndoManager {
 		if (canUndo()) {
 			var result = _undo[_undo.length - 1].execute();
 			_undo.pop();
-			if (result != null) _redo.push(result);
+			if (result != null)
+				_redo.push(result);
 		}
 	}
 
@@ -36,19 +37,22 @@ class UndoManager {
 		if (canRedo()) {
 			var result = _redo[_redo.length - 1].execute();
 			_redo.pop();
-			if (result != null) _undo.push(result);
+			if (result != null)
+				_undo.push(result);
 		}
 	}
 
 	public function update():Void {
 		if (Cs.keyDown(Cs.KEY_LCONTROL) || Cs.keyDown(Cs.KEY_RCONTROL)) {
-			if (Cs.keyHit(Cs.KEY_Z)) undo();
-			if (Cs.keyHit(Cs.KEY_Y)) redo();
+			if (Cs.keyHit(Cs.KEY_Z))
+				undo();
+			if (Cs.keyHit(Cs.KEY_Y))
+				redo();
 		}
 	}
 
 	public function reset():Void {
-		_undo = [];
-		_redo = [];
+		_undo.resize(0);
+		_redo.resize(0);
 	}
 }

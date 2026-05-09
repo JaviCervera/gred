@@ -1,10 +1,10 @@
 class TextureViewer {
-	public var names:Array<String>;
-	public var selected:Int;
-	public var path:String;
-	public var tex:Null<ITexture>;
-	var prevKey:Int;
-	var nextKey:Int;
+	private final names:Array<String>;
+	private final path:String;
+	private final prevKey:Int;
+	private final nextKey:Int;
+	private var selected:Int;
+	private var tex:Null<ITexture>;
 
 	public function new(textureNames:Array<String>, selected:Int, path:String, prevKey:Int, nextKey:Int) {
 		names = textureNames;
@@ -13,16 +13,19 @@ class TextureViewer {
 		tex = null;
 		this.prevKey = prevKey;
 		this.nextKey = nextKey;
-		_reloadTexture();
+		reloadTexture();
 	}
 
 	public function update():Void {
-		if (Cs.keyHit(prevKey)) _prevTexture();
-		if (Cs.keyHit(nextKey)) _nextTexture();
+		if (Cs.keyHit(prevKey))
+			prevTexture();
+		if (Cs.keyHit(nextKey))
+			nextTexture();
 	}
 
 	public function draw(x:Int, y:Int, width:Int, height:Int):Void {
-		if (tex != null) Cs.drawTextureEx(tex, x, y, width, height, Cs.COLOR_WHITE);
+		if (tex != null)
+			Cs.drawTextureEx(tex, x, y, width, height, Cs.COLOR_WHITE);
 	}
 
 	public function texture():Null<ITexture> {
@@ -33,19 +36,21 @@ class TextureViewer {
 		return names[selected - 1];
 	}
 
-	function _nextTexture():Void {
+	private function nextTexture():Void {
 		selected++;
-		if (selected > names.length) selected = 1;
-		_reloadTexture();
+		if (selected > names.length)
+			selected = 1;
+		reloadTexture();
 	}
 
-	function _prevTexture():Void {
+	private function prevTexture():Void {
 		selected--;
-		if (selected < 1) selected = names.length;
-		_reloadTexture();
+		if (selected < 1)
+			selected = names.length;
+		reloadTexture();
 	}
 
-	function _reloadTexture():Void {
+	private function reloadTexture():Void {
 		tex = Cs.loadTexture(path + names[selected - 1]);
 	}
 }

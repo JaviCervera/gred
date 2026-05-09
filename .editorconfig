@@ -9,3 +9,7 @@ insert_final_newline = true
 [*.lua]
 indent_size = 2
 indent_style = space
+
+[*.hx]
+indent_size = 2
+indent_style = tab

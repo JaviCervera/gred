@@ -1,11 +1,11 @@
 package grid_mesh;
 
 class GridSurface {
-	public var texName:Null<String>;
-	public var verts:Array<GridVertex>;
-	public var idxs:Array<Int>;
+	public final texName:String;
+	public final verts:Array<GridVertex>;
+	public final idxs:Array<Int>;
 
-	public function new(?texName:String) {
+	public function new(texName:String = "") {
 		this.texName = texName;
 		verts = [];
 		idxs = [];
@@ -37,21 +37,22 @@ class GridSurface {
 	}
 
 	public function addToMesh(mesh:IMesh):IMeshBuffer {
-		var vertices = _verticesMemblock();
-		var indices = _indicesMemblock();
-		var surf = Cs.addSurface(mesh, vertices, numVertices(), indices, numIndices(), Cs.SURFACE_STANDARD);
-		var mat = Cs.surfaceMaterial(surf);
-		if (texName != null) Cs.setMaterialTexture(mat, 1, Cs.loadTexture(texName));
+		final vertices = verticesMemblock();
+		final indices = indicesMemblock();
+		final surf = Cs.addSurface(mesh, vertices, numVertices(), indices, numIndices(), Cs.SURFACE_STANDARD);
+		final mat = Cs.surfaceMaterial(surf);
+		if (texName != "")
+			Cs.setMaterialTexture(mat, 1, Cs.loadTexture(texName));
 		Cs.freeMemblock(vertices);
 		Cs.freeMemblock(indices);
 		return surf;
 	}
 
-	function _verticesMemblock():Memblock {
-		var vertexSize = 36;
-		var memblock = Cs.createMemblock(vertexSize * numVertices());
+	private function verticesMemblock():Memblock {
+		final vertexSize = 36;
+		final memblock = Cs.createMemblock(vertexSize * numVertices());
 		for (i in 0...verts.length) {
-			var v = verts[i];
+			final v = verts[i];
 			Cs.pokeFloat(memblock, i * vertexSize, v.x);
 			Cs.pokeFloat(memblock, i * vertexSize + 4, v.y);
 			Cs.pokeFloat(memblock, i * vertexSize + 8, v.z);
@@ -65,9 +66,9 @@ class GridSurface {
 		return memblock;
 	}
 
-	function _indicesMemblock():Memblock {
-		var indexSize = 2;
-		var memblock = Cs.createMemblock(indexSize * numIndices());
+	private function indicesMemblock():Memblock {
+		final indexSize = 2;
+		final memblock = Cs.createMemblock(indexSize * numIndices());
 		for (i in 0...idxs.length) {
 			Cs.pokeShort(memblock, i * indexSize, idxs[i]);
 		}

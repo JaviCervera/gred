@@ -1,15 +1,15 @@
 package grid_mesh;
 
 class GridVertex {
-	public var x:Float;
-	public var y:Float;
-	public var z:Float;
-	public var nx:Float;
-	public var ny:Float;
-	public var nz:Float;
-	public var color:Int;
-	public var u:Float;
-	public var v:Float;
+	public final x:Float;
+	public final y:Float;
+	public final z:Float;
+	public final nx:Float;
+	public final ny:Float;
+	public final nz:Float;
+	public final color:Int;
+	public final u:Float;
+	public final v:Float;
 
 	public function new(x:Float, y:Float, z:Float, nx:Float, ny:Float, nz:Float, color:Int, u:Float, v:Float) {
 		this.x = x;

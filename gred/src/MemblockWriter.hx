@@ -1,6 +1,6 @@
 class MemblockWriter {
-	var memblock:Memblock;
-	var offset:Int;
+	private final memblock:Memblock;
+	private var offset:Int;
 
 	public function new(memblock:Memblock) {
 		this.memblock = memblock;

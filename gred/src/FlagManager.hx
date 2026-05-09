@@ -1,6 +1,6 @@
 class FlagManager {
-	public var lst:Array<Flag>;
-	var currentActive:Null<Int>;
+	private var lst:Array<Flag>;
+	private var currentActive:Null<Int>;
 
 	public function new() {
 		lst = [];
@@ -11,7 +11,8 @@ class FlagManager {
 		if (activeFlag != currentActive) {
 			if (currentActive != null) {
 				var flag = find(currentActive);
-				if (flag != null) flag.setActive(false);
+				if (flag != null)
+					flag.setActive(false);
 				currentActive = null;
 			}
 			if (activeFlag != null) {
@@ -36,7 +37,8 @@ class FlagManager {
 	}
 
 	public function clear():Void {
-		for (flag in lst) flag.destroy();
+		for (flag in lst)
+			flag.destroy();
 		lst = [];
 		currentActive = null;
 	}
@@ -53,7 +55,8 @@ class FlagManager {
 
 	public function remove(flagId:Int):Void {
 		var index = findIndex(flagId);
-		if (index == null) return;
+		if (index == null)
+			return;
 		lst[index].destroy();
 		lst.splice(index, 1);
 	}
@@ -65,7 +68,8 @@ class FlagManager {
 
 	public function findIndex(flagId:Int):Null<Int> {
 		for (i in 0...lst.length) {
-			if (lst[i].id == flagId) return i;
+			if (lst[i].id == flagId)
+				return i;
 		}
 		return null;
 	}
@@ -75,7 +79,8 @@ class FlagManager {
 	}
 
 	public function at(index:Int):Null<Flag> {
-		if (index <= 0 || index > size()) return null;
+		if (index <= 0 || index > size())
+			return null;
 		return lst[index - 1];
 	}
 }
