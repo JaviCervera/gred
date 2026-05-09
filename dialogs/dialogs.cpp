@@ -3,6 +3,12 @@
 #include "strmanip.h"
 #include "tinyfiledialogs.h"
 
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
 typedef char bool_t;
 
 ColdSteelSDK* sdk = 0;
@@ -141,7 +147,7 @@ int wrap_RequestInput(void* context) {
   return 1;
 }
 
-__declspec(dllexport) int dialogs_load(ColdSteelSDK* sdk_) {
+EXPORT int dialogs_load(ColdSteelSDK* sdk_) {
   sdk = sdk_;
   sdk->RegisterFunction("Confirm", wrap_Confirm);
   sdk->RegisterFunction("Notify", wrap_Notify);
