@@ -16,4 +16,5 @@ private:
     Cursor& cursor;
     float   distance;
     bool    was_editing;
+    dimension2du last_screen_size;
 };

@@ -2,18 +2,26 @@
 #include <algorithm>
 
 Camera::Camera(Cursor& cur)
-    : cursor(cur), distance(6.f), was_editing(true)
+    : cursor(cur), distance(6.f), was_editing(true), last_screen_size(App::driver->getScreenSize())
 {
     entity = App::smgr->addCameraSceneNode(nullptr,
                                            vector3df(0.f, 0.f, 0.f),
                                            vector3df(0.f, 0.f, 1.f));
     entity->setNearValue(0.1f);
     entity->setFarValue(100.f);
+    if (last_screen_size.Height > 0)
+        entity->setAspectRatio((f32)last_screen_size.Width / (f32)last_screen_size.Height);
     // Prime the rotation so that move_entity on frame 1 already uses the correct pitch
     entity->setRotation(vector3df(89.9f, 0.f, 0.f));
 }
 
 void Camera::update(bool editing) {
+    dimension2du screen_size = App::driver->getScreenSize();
+    if (screen_size != last_screen_size && screen_size.Height > 0) {
+        entity->setAspectRatio((f32)screen_size.Width / (f32)screen_size.Height);
+        last_screen_size = screen_size;
+    }
+
     if (editing) {
         float cx = App::entity_x(cursor.entity);
         float cy = App::entity_y(cursor.entity);
