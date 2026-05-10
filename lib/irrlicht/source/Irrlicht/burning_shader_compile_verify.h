@@ -1,0 +1,88 @@
+// apply global override
+#ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
+#undef INVERSE_W
+#endif
+
+#ifndef SOFTWARE_DRIVER_2_SUBTEXEL
+#undef SUBTEXEL
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS < 1
+#undef IPOL_C0
+#undef IPOL_A0
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS < 2
+#undef IPOL_C1
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS < 3
+#undef IPOL_C2
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS < 4
+#undef IPOL_C3
+#endif
+
+
+#if BURNING_MATERIAL_MAX_LIGHT_TANGENT < 1
+#undef IPOL_L0
+#endif
+
+
+// 1/x * FIX_POINT
+#if !defined(INVERSE_W_RANGE)
+	#define INVERSE_W_RANGE FIX_POINT_F32_MUL
+#endif
+
+#if defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) || defined ( SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT )
+#else
+
+#ifdef IPOL_W
+	#undef IPOL_W
+	#define IPOL_Z
+#endif
+
+#ifdef CMP_W
+	#undef CMP_W
+	#define CMP_Z
+#endif
+
+#ifdef WRITE_W
+	#undef WRITE_W
+	#define WRITE_Z
+#endif
+
+#endif
+
+// Max Interpolator
+#undef BURNING_MATERIAL_MAX_COLORS_USED
+#if defined(IPOL_C3)
+	#define BURNING_MATERIAL_MAX_COLORS_USED 4
+#elif defined(IPOL_C2)
+	#define BURNING_MATERIAL_MAX_COLORS_USED 3
+#elif  defined(IPOL_C1)
+	#define BURNING_MATERIAL_MAX_COLORS_USED 2
+#elif  defined(IPOL_C0) || defined (IPOL_A0)
+	#define BURNING_MATERIAL_MAX_COLORS_USED 1
+#else
+	#define BURNING_MATERIAL_MAX_COLORS_USED 0
+#endif
+
+#undef BURNING_MATERIAL_MAX_TEXTURES_USED
+#if defined(IPOL_T2)
+#define BURNING_MATERIAL_MAX_TEXTURES_USED 3
+#elif  defined(IPOL_T1)
+#define BURNING_MATERIAL_MAX_TEXTURES_USED 2
+#elif  defined(IPOL_T0)
+#define BURNING_MATERIAL_MAX_TEXTURES_USED 1
+#else
+#define BURNING_MATERIAL_MAX_TEXTURES_USED 0
+#endif
+
+#undef BURNING_MATERIAL_MAX_LIGHT_TANGENT_USED
+#if defined(IPOL_L0)
+	#define BURNING_MATERIAL_MAX_LIGHT_TANGENT_USED 1
+#else
+#define BURNING_MATERIAL_MAX_LIGHT_TANGENT_USED 0
+#endif
