@@ -45,6 +45,11 @@ else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	endif (IRRLICHT_SHARED)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
+set_target_properties(Irrlicht PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+)
+
 #Add common options
 if (IRRLICHT_SHARED)
 	add_definitions(-D_USRDLL -DIRRLICHT_EXPORTS)

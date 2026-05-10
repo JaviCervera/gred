@@ -9,8 +9,15 @@
 #include "grid_manager.h"
 #include <string>
 #include <cmath>
-#include <filesystem>
+#include <algorithm>
+#include <dirent.h>
 #include <vector>
+
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
@@ -21,56 +28,87 @@ static std::string enable_disable(bool state)
     return state ? "Disable" : "Enable";
 }
 
-static bool has_assets_at(const std::string &base)
+static std::string normalize_slashes(std::string path)
 {
-    namespace fs = std::filesystem;
-    return fs::exists(base + "textures") && fs::exists(base + "icons");
+    std::replace(path.begin(), path.end(), '\\', '/');
+    return path;
 }
 
-static std::string with_trailing_slash(std::filesystem::path p)
+static std::string with_trailing_slash(std::string path)
 {
-    std::error_code ec;
-    p = std::filesystem::weakly_canonical(p, ec);
-    if (ec)
-        p = p.lexically_normal();
-    std::string out = p.generic_string();
-    if (!out.empty() && out.back() != '/')
-        out.push_back('/');
-    return out;
+    path = normalize_slashes(path);
+    if (!path.empty() && path.back() != '/')
+        path.push_back('/');
+    return path;
+}
+
+static std::string join_path(const std::string &base, const std::string &child)
+{
+    if (base.empty())
+        return normalize_slashes(child);
+    return normalize_slashes(with_trailing_slash(base) + child);
+}
+
+static bool directory_exists(const std::string &path)
+{
+    DIR *dir = opendir(path.c_str());
+    if (!dir)
+        return false;
+    closedir(dir);
+    return true;
+}
+
+static std::string current_working_dir()
+{
+    char buf[2048];
+#ifdef _WIN32
+    if (_getcwd(buf, sizeof(buf)) != nullptr)
+#else
+    if (getcwd(buf, sizeof(buf)) != nullptr)
+#endif
+        return with_trailing_slash(buf);
+    return "./";
+}
+
+static bool has_assets_at(const std::string &base)
+{
+    return directory_exists(base + "textures") && directory_exists(base + "icons");
 }
 
 static std::string detect_resource_root(const char *argv0)
 {
-    namespace fs = std::filesystem;
     std::vector<std::string> candidates;
-    auto add_candidate = [&](const fs::path &p)
+    auto add_candidate = [&](const std::string &p)
     {
         std::string c = with_trailing_slash(p);
         if (!c.empty() && std::find(candidates.begin(), candidates.end(), c) == candidates.end())
             candidates.push_back(c);
     };
 
-    add_candidate(fs::current_path());
-    add_candidate(fs::current_path() / "_build");
+    const std::string cwd = current_working_dir();
+    add_candidate(cwd);
+    add_candidate(join_path(cwd, "_build"));
 
     if (argv0 && argv0[0] != '\0')
     {
-        fs::path exe = fs::path(argv0);
-        if (exe.is_relative())
-            exe = fs::current_path() / exe;
+        std::string exe = normalize_slashes(argv0);
+        bool is_absolute = (!exe.empty() && exe[0] == '/') || (exe.size() > 1 && exe[1] == ':');
+        std::size_t slash_pos = exe.find_last_of('/');
+        std::string exe_dir;
+        if (slash_pos == std::string::npos)
+            exe_dir = cwd;
+        else
+            exe_dir = exe.substr(0, slash_pos);
 
-        std::error_code ec;
-        exe = fs::weakly_canonical(exe, ec);
-        if (ec)
-            exe = exe.lexically_normal();
+        if (!is_absolute)
+            exe_dir = join_path(cwd, exe_dir);
 
-        fs::path exe_dir = exe.parent_path();
         add_candidate(exe_dir);
-        add_candidate(exe_dir / "../Resources");
-        add_candidate(exe_dir / "..");
-        add_candidate(exe_dir / "../..");
-        add_candidate(exe_dir / "../../..");
-        add_candidate(exe_dir / "../../../_build");
+        add_candidate(join_path(exe_dir, "../Resources"));
+        add_candidate(join_path(exe_dir, ".."));
+        add_candidate(join_path(exe_dir, "../.."));
+        add_candidate(join_path(exe_dir, "../../.."));
+        add_candidate(join_path(exe_dir, "../../../_build"));
     }
 
 #ifdef __APPLE__
