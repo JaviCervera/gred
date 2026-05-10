@@ -64,6 +64,10 @@ bool init(int width, int height, int bits, int flags) {
     smgr   = device->getSceneManager();
     guienv = device->getGUIEnvironment();
 
+    // Match ColdSteel's OpenScreenEx defaults
+    driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT, true);
+    smgr->setAmbientLight(SColorf(1.f, 1.f, 1.f, 1.f));
+
     last_time = device->getTimer()->getTime();
 
     driver->beginScene(true, true, SColor(255, 0, 0, 80));
@@ -190,29 +194,11 @@ void set_material_flag(SMaterial& mat, int flag, bool enable) {
 }
 
 void set_material_filter_mode(SMaterial& mat, int mode) {
-    switch (mode) {
-        case FILTER_DISABLED:
-            mat.setFlag(EMF_BILINEAR_FILTER,  false);
-            mat.setFlag(EMF_TRILINEAR_FILTER,  false);
-            mat.setFlag(EMF_ANISOTROPIC_FILTER, false);
-            break;
-        case FILTER_BILINEAR:
-            mat.setFlag(EMF_BILINEAR_FILTER,   true);
-            mat.setFlag(EMF_TRILINEAR_FILTER,  false);
-            mat.setFlag(EMF_ANISOTROPIC_FILTER, false);
-            break;
-        case FILTER_TRILINEAR:
-            mat.setFlag(EMF_BILINEAR_FILTER,  false);
-            mat.setFlag(EMF_TRILINEAR_FILTER,  true);
-            mat.setFlag(EMF_ANISOTROPIC_FILTER, false);
-            break;
-        case FILTER_ANISOTROPIC:
-            mat.setFlag(EMF_BILINEAR_FILTER,  false);
-            mat.setFlag(EMF_TRILINEAR_FILTER,  false);
-            mat.setFlag(EMF_ANISOTROPIC_FILTER, true);
-            break;
-        default: break;
-    }
+    // Mirror ColdSteel's SetMaterialFilterMode: higher modes include lower ones
+    mat.setFlag(EMF_ANISOTROPIC_FILTER, mode == FILTER_ANISOTROPIC);
+    mat.setFlag(EMF_TRILINEAR_FILTER,   mode >= FILTER_TRILINEAR);
+    mat.setFlag(EMF_BILINEAR_FILTER,    mode >= FILTER_BILINEAR);
+    mat.setFlag(EMF_USE_MIP_MAPS,       mode >= FILTER_BILINEAR);
 }
 
 void set_material_render_mode(SMaterial& mat, int mode) {
