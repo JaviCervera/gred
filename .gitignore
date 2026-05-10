@@ -34,3 +34,5 @@
 .DS_Store
 .vscode
 _cmake
+_build/gred
+_build/gred.app

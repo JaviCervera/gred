@@ -31,9 +31,9 @@ float Flag::z() const { return App::entity_z(entity); }
 void Flag::set_active(bool a)
 {
     if (active_texture == nullptr)
-        active_texture = App::driver->getTexture("icons/flag_red.png");
+        active_texture = App::driver->getTexture(App::resource_path("icons/flag_red.png").c_str());
     if (inactive_texture == nullptr)
-        inactive_texture = App::driver->getTexture("icons/flag_orange.png");
+        inactive_texture = App::driver->getTexture(App::resource_path("icons/flag_orange.png").c_str());
 
     if (a != active)
     {

@@ -9,17 +9,107 @@
 #include "grid_manager.h"
 #include <string>
 #include <cmath>
+#include <filesystem>
+#include <vector>
+
+#ifdef __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 static std::string enable_disable(bool state)
 {
     return state ? "Disable" : "Enable";
 }
 
-int main()
+static bool has_assets_at(const std::string &base)
 {
-    const std::string TEX_PATH = "textures/";
+    namespace fs = std::filesystem;
+    return fs::exists(base + "textures") && fs::exists(base + "icons");
+}
 
-    App::init(1024, 768, 32, SCREEN_RESIZABLE | SCREEN_VSYNC);
+static std::string with_trailing_slash(std::filesystem::path p)
+{
+    std::error_code ec;
+    p = std::filesystem::weakly_canonical(p, ec);
+    if (ec)
+        p = p.lexically_normal();
+    std::string out = p.generic_string();
+    if (!out.empty() && out.back() != '/')
+        out.push_back('/');
+    return out;
+}
+
+static std::string detect_resource_root(const char *argv0)
+{
+    namespace fs = std::filesystem;
+    std::vector<std::string> candidates;
+    auto add_candidate = [&](const fs::path &p)
+    {
+        std::string c = with_trailing_slash(p);
+        if (!c.empty() && std::find(candidates.begin(), candidates.end(), c) == candidates.end())
+            candidates.push_back(c);
+    };
+
+    add_candidate(fs::current_path());
+    add_candidate(fs::current_path() / "_build");
+
+    if (argv0 && argv0[0] != '\0')
+    {
+        fs::path exe = fs::path(argv0);
+        if (exe.is_relative())
+            exe = fs::current_path() / exe;
+
+        std::error_code ec;
+        exe = fs::weakly_canonical(exe, ec);
+        if (ec)
+            exe = exe.lexically_normal();
+
+        fs::path exe_dir = exe.parent_path();
+        add_candidate(exe_dir);
+        add_candidate(exe_dir / "../Resources");
+        add_candidate(exe_dir / "..");
+        add_candidate(exe_dir / "../..");
+        add_candidate(exe_dir / "../../..");
+        add_candidate(exe_dir / "../../../_build");
+    }
+
+#ifdef __APPLE__
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (bundle)
+    {
+        CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(bundle);
+        if (resources_url)
+        {
+            char path[PATH_MAX];
+            if (CFURLGetFileSystemRepresentation(resources_url, true, reinterpret_cast<UInt8 *>(path), sizeof(path)))
+            {
+                add_candidate(path);
+            }
+            CFRelease(resources_url);
+        }
+    }
+#endif
+
+    for (const auto &base : candidates)
+    {
+        if (has_assets_at(base))
+            return base;
+    }
+
+    return "./";
+}
+
+int main(int argc, char **argv)
+{
+    const char *argv0 = (argc > 0 && argv && argv[0]) ? argv[0] : nullptr;
+    const std::string resource_root = detect_resource_root(argv0);
+    const std::string TEX_PATH = resource_root + "textures/";
+
+    if (!App::init(1024, 768, 32, SCREEN_RESIZABLE | SCREEN_VSYNC))
+        return 1;
+
+    App::set_resource_root(resource_root);
+    App::device->getFileSystem()->changeWorkingDirectoryTo(resource_root.c_str());
 
     auto texture_names = TextureReader::read(TEX_PATH);
 

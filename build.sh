@@ -19,4 +19,9 @@ make -j$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
 
 cd ..
 echo ""
-echo "Build succeeded. Executable: $OUTPUT_DIR/gred"
+if [ "$(uname)" = "Darwin" ]; then
+    echo "Build succeeded. App bundle: $OUTPUT_DIR/gred.app"
+    echo "Launcher symlink: $OUTPUT_DIR/gred"
+else
+    echo "Build succeeded. Executable: $OUTPUT_DIR/gred"
+fi

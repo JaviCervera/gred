@@ -1,5 +1,0 @@
--cp gred/src
--lua gred/main.lua
--main Main
--D lua-vanilla
---dce full

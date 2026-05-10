@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(gred)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # Build Irrlicht as a static library
 add_subdirectory(lib/irrlicht)
 
@@ -14,7 +11,16 @@ file(GLOB GRED_SOURCES
 )
 list(APPEND GRED_SOURCES "lib/tinyfiledialogs/tinyfiledialogs.c")
 
-add_executable(gred ${GRED_SOURCES})
+if (APPLE)
+    add_executable(gred MACOSX_BUNDLE ${GRED_SOURCES})
+else()
+    add_executable(gred ${GRED_SOURCES})
+endif()
+
+set_target_properties(gred PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
 
 target_include_directories(gred PRIVATE
     "lib/irrlicht/include"
@@ -24,7 +30,10 @@ target_include_directories(gred PRIVATE
 target_compile_definitions(gred PRIVATE _IRR_STATIC_LIB_)
 
 # Set output directory
-set_target_properties(gred PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/_build")
+set_target_properties(gred PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/_build"
+    BUNDLE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/_build"
+)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     if (MSVC)
@@ -43,9 +52,26 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         "-framework IOKit"
         "-framework OpenGL"
     )
+
+    set(GRED_ASSET_SOURCE_DIR "${CMAKE_SOURCE_DIR}/_build")
+    set(GRED_BUNDLE_RES_DIR "$<TARGET_FILE_DIR:gred>/../Resources")
     add_custom_command(TARGET gred POST_BUILD
-        COMMAND codesign --force --deep -s - $<TARGET_FILE:gred>
-        COMMENT "Code-signing gred"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${GRED_BUNDLE_RES_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${GRED_ASSET_SOURCE_DIR}/textures" "${GRED_BUNDLE_RES_DIR}/textures"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${GRED_ASSET_SOURCE_DIR}/icons" "${GRED_BUNDLE_RES_DIR}/icons"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${GRED_ASSET_SOURCE_DIR}/levels" "${GRED_BUNDLE_RES_DIR}/levels"
+        COMMENT "Copying game assets into gred.app bundle"
+    )
+
+    add_custom_command(TARGET gred POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rm -f "${CMAKE_SOURCE_DIR}/_build/gred"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink "$<TARGET_FILE:gred>" "${CMAKE_SOURCE_DIR}/_build/gred"
+        COMMENT "Creating _build/gred launcher symlink"
+    )
+
+    add_custom_command(TARGET gred POST_BUILD
+        COMMAND codesign --force --deep -s - "$<TARGET_BUNDLE_DIR:gred>"
+        COMMENT "Code-signing gred.app"
     )
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     target_compile_options(gred PRIVATE -fPIC)
