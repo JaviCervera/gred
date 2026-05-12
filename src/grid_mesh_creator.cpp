@@ -2,21 +2,22 @@
 #include "grid.h"
 #include "stair_mesh_creator.h"
 
-SMesh* GridMeshCreator::create(Grid* grid) {
-    GridMeshCreator creator(grid);
-    auto* mesh = new SMesh();
+Mesh* GridMeshCreator::create(Grid* g) {
+    GridMeshCreator creator(g);
+    for (int x = 1; x <= g->tiles_x(); ++x)
+        for (int y = 1; y <= g->tiles_y(); ++y)
+            for (int z = 1; z <= g->tiles_z(); ++z)
+                creator.add_grid_mesh_tile(x, y, z);
+
+    int filter = g->filtering_enabled() ? FILTER_TRILINEAR : FILTER_NONE;
+    Mesh* mesh = CreateMesh();
     for (auto& kv : creator.surfs)
-        kv.second.add_to_mesh(mesh);
-    App::update_mesh(mesh);
+        kv.second.add_to_mesh(mesh, filter);
+    RebuildMesh(mesh);
     return mesh;
 }
 
-GridMeshCreator::GridMeshCreator(Grid* g) : grid(g) {
-    for (int x = 1; x <= grid->tiles_x(); ++x)
-        for (int y = 1; y <= grid->tiles_y(); ++y)
-            for (int z = 1; z <= grid->tiles_z(); ++z)
-                add_grid_mesh_tile(x, y, z);
-}
+GridMeshCreator::GridMeshCreator(Grid* g) : grid(g) {}
 
 void GridMeshCreator::add_grid_mesh_tile(int x, int y, int z) {
     if (!grid->has_tile(x, y, z)) return;
@@ -110,25 +111,8 @@ void GridMeshCreator::add_stairs(int x, int y, int z, float yaw) {
               yaw != 180.f, // back
               yaw != 270.f);// left
 
-    auto* stairs_mesh = StairMeshCreator::create((float)x, (float)y, (float)z, yaw);
-    auto* stairs_buf  = static_cast<SMeshBuffer*>(stairs_mesh->getMeshBuffer(0));
     auto& surf = find_surface(grid->floor_texture_name(x, y, z));
-    int base_idx = surf.num_vertices();
-
-    for (u32 v = 0; v < stairs_buf->getVertexCount(); ++v) {
-        const S3DVertex& vtx = stairs_buf->Vertices[v];
-        surf.add_vertex(GridVertex(
-            vtx.Pos.X,    vtx.Pos.Y,    vtx.Pos.Z,
-            vtx.Normal.X, vtx.Normal.Y, vtx.Normal.Z,
-            (int)vtx.Color.color,
-            vtx.TCoords.X, vtx.TCoords.Y));
-    }
-
-    u32 ic = stairs_buf->getIndexCount();
-    for (u32 i = 0; i < ic; ++i)
-        surf.add_index(base_idx + (int)stairs_buf->Indices[i]);
-
-    stairs_mesh->drop();
+    StairMeshCreator::create((float)x, (float)y, (float)z, yaw, surf);
 }
 
 GridSurface& GridMeshCreator::find_surface(const std::string& tex_name) {

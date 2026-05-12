@@ -28,10 +28,10 @@ void UndoManager::redo() {
 }
 
 void UndoManager::update() {
-    bool ctrl = App::key_down[KEY_LCONTROL] || App::key_down[KEY_RCONTROL];
+    bool ctrl = App::key_down[GLFW_KEY_LEFT_CONTROL] || App::key_down[GLFW_KEY_RIGHT_CONTROL];
     if (ctrl) {
-        if (App::key_hit[KEY_KEY_Z]) undo();
-        if (App::key_hit[KEY_KEY_Y]) redo();
+        if (App::key_hit[GLFW_KEY_Z]) undo();
+        if (App::key_hit[GLFW_KEY_Y]) redo();
     }
 }
 

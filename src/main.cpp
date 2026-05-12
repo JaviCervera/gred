@@ -143,24 +143,23 @@ int main(int argc, char **argv)
     const std::string resource_root = detect_resource_root(argv0);
     const std::string TEX_PATH = resource_root + "textures/";
 
-    if (!App::init(1024, 768, 32, SCREEN_RESIZABLE | SCREEN_VSYNC))
+    if (!App::init(1024, 768, SCREEN_RESIZABLE | SCREEN_VSYNC))
         return 1;
 
     App::set_resource_root(resource_root);
-    App::device->getFileSystem()->changeWorkingDirectoryTo(resource_root.c_str());
 
     auto texture_names = TextureReader::read(TEX_PATH);
 
-    TextureViewer ceiling_tex(texture_names, 1, TEX_PATH, KEY_KEY_W, KEY_KEY_E);
-    TextureViewer wall_tex(texture_names, 2, TEX_PATH, KEY_KEY_S, KEY_KEY_D);
-    TextureViewer floor_tex(texture_names, 3, TEX_PATH, KEY_KEY_X, KEY_KEY_C);
+    TextureViewer ceiling_tex(texture_names, 1, TEX_PATH, GLFW_KEY_W, GLFW_KEY_E);
+    TextureViewer wall_tex(texture_names, 2, TEX_PATH, GLFW_KEY_S, GLFW_KEY_D);
+    TextureViewer floor_tex(texture_names, 3, TEX_PATH, GLFW_KEY_X, GLFW_KEY_C);
 
     Grid grid(64, 16, 64, TEX_PATH);
     Cursor cursor(grid);
     FlagManager flag_mgr;
     UndoManager undo_mgr;
     GridManager grid_mgr(grid, cursor, ceiling_tex, wall_tex, floor_tex, flag_mgr, undo_mgr);
-    Camera cam(cursor);
+    CameraController cam(cursor);
 
     while (App::run())
     {
@@ -181,8 +180,8 @@ int main(int argc, char **argv)
 
         if (grid_mgr.is_editing())
         {
-            int sw = App::driver->getScreenSize().Width;
-            int sh = App::driver->getScreenSize().Height;
+            int sw = App::screen_width();
+            int sh = App::screen_height();
 
             ceiling_tex.draw(sw - 144, 16, 128, 128);
             wall_tex.draw(sw - 144, 160, 128, 128);
@@ -202,9 +201,9 @@ int main(int argc, char **argv)
                 "[U/I] Select flag number (current: " + std::to_string(grid_mgr.current_flag()) + ") -- [P] Place flag -- [O] Delete flag",
                 8, 40, COLOR_WHITE);
 
-            int cx = (int)std::round(App::entity_x(cursor.entity));
-            int cy = (int)std::round(App::entity_y(cursor.entity));
-            int cz = (int)std::round(App::entity_z(cursor.entity));
+            int cx = (int)std::round(App::entity_x((Entity*)cursor.entity));
+            int cy = (int)std::round(App::entity_y((Entity*)cursor.entity));
+            int cz = (int)std::round(App::entity_z((Entity*)cursor.entity));
             App::draw_text(
                 "Cursor Position " + std::to_string(cx) + "x" + std::to_string(cy) + "x" + std::to_string(cz),
                 8, sh - 24, COLOR_WHITE);
@@ -213,6 +212,5 @@ int main(int argc, char **argv)
         App::refresh_screen();
     }
 
-    App::device->drop();
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "stair_mesh_creator.h"
+#include <cmath>
 
 void StairMeshCreator::add_step_wall(float x, float y, float z, GridSurface& surf) {
     float sx = x - 0.5f;
@@ -24,29 +25,34 @@ void StairMeshCreator::add_step_floor(float x, float y, float z, GridSurface& su
     surf.add_index(a); surf.add_index(d); surf.add_index(c);
 }
 
-SMesh* StairMeshCreator::create(float x, float y, float z, float yaw) {
-    GridSurface surf;
-    add_step_wall(0.f, 0.f,  0.f,   surf);
-    add_step_wall(0.f, 0.2f, 0.25f, surf);
-    add_step_wall(0.f, 0.4f, 0.50f, surf);
-    add_step_wall(0.f, 0.6f, 0.75f, surf);
-    add_step_wall(0.f, 0.8f, 1.f,   surf);
-    add_step_floor(0.f, 0.2f, 0.f,   surf);
-    add_step_floor(0.f, 0.4f, 0.25f, surf);
-    add_step_floor(0.f, 0.6f, 0.50f, surf);
-    add_step_floor(0.f, 0.8f, 0.75f, surf);
+void StairMeshCreator::create(float x, float y, float z, float yaw, GridSurface& target) {
+    GridSurface local;
+    add_step_wall(0.f, 0.f,  0.f,   local);
+    add_step_wall(0.f, 0.2f, 0.25f, local);
+    add_step_wall(0.f, 0.4f, 0.50f, local);
+    add_step_wall(0.f, 0.6f, 0.75f, local);
+    add_step_wall(0.f, 0.8f, 1.f,   local);
+    add_step_floor(0.f, 0.2f, 0.f,   local);
+    add_step_floor(0.f, 0.4f, 0.25f, local);
+    add_step_floor(0.f, 0.6f, 0.50f, local);
+    add_step_floor(0.f, 0.8f, 0.75f, local);
 
-    auto* mesh = new SMesh();
-    surf.add_to_mesh(mesh);
+    int base = target.num_vertices();
+    float rad = yaw * (float)M_PI / 180.f;
+    float c   = cosf(rad);
+    float s   = sinf(rad);
 
-    if (yaw != 0.f) {
-        matrix4 m;
-        m.setRotationDegrees(vector3df(0.f, yaw, 0.f));
-        App::smgr->getMeshManipulator()->transform(mesh, m);
+    for (const auto& v : local.verts) {
+        target.add_vertex(GridVertex(
+            v.x * c + v.z * s + x,
+            v.y + y,
+            -v.x * s + v.z * c + z,
+            v.nx * c + v.nz * s,
+            v.ny,
+            -v.nx * s + v.nz * c,
+            v.color, v.u, v.v
+        ));
     }
-    matrix4 tm;
-    tm.setTranslation(vector3df(x, y, z));
-    App::smgr->getMeshManipulator()->transform(mesh, tm);
-    App::update_mesh(mesh);
-    return mesh;
+    for (int idx : local.idxs)
+        target.add_index(base + idx);
 }

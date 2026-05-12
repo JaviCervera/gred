@@ -6,9 +6,9 @@
 
 class GridSurface {
 public:
-    std::string           tex_name;
+    std::string             tex_name;
     std::vector<GridVertex> verts;
-    std::vector<u16>      idxs;
+    std::vector<int>        idxs;
 
     GridSurface(const std::string& tex = "");
 
@@ -16,5 +16,5 @@ public:
     void add_index(int idx);
     int  num_vertices() const;
     int  num_indices() const;
-    IMeshBuffer* add_to_mesh(SMesh* mesh) const;
+    void add_to_mesh(Mesh* mesh, int filter) const;
 };

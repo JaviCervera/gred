@@ -42,14 +42,16 @@ public:
     bool filtering_enabled() const;
     void toggle_wireframe();
     bool wireframe_enabled() const;
+    void set_lighting(bool enabled);
+    bool lighting_enabled() const;
 
 private:
     std::string tex_path;
     std::vector<std::vector<std::vector<std::optional<TileData>>>> tiles;
-    IMeshSceneNode* model  = nullptr;
-    bool filtering         = true;
-    bool wireframe         = false;
+    Model* model   = nullptr;
+    bool filtering = true;
+    bool wireframe = false;
+    bool lighting  = false;
 
-    void apply_filtering();
-    void apply_wireframe();
+    void apply_lighting();
 };

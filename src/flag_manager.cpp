@@ -19,7 +19,7 @@ void FlagManager::update(std::optional<int> active_flag) {
     }
 }
 
-void FlagManager::draw_flag_numbers(ICameraSceneNode* cam) {
+void FlagManager::draw_flag_numbers(Camera* cam) {
     for (Flag* flag : lst) {
         App::world_to_screen(cam, flag->x(), flag->y(), flag->z());
         std::string label = std::to_string(flag->id);

@@ -8,7 +8,7 @@ class Grid;
 
 class GridMeshCreator {
 public:
-    static SMesh* create(Grid* grid);
+    static Mesh* create(Grid* grid);
 
 private:
     Grid* grid;

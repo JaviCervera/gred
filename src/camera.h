@@ -2,11 +2,11 @@
 #include "app.h"
 #include "cursor.h"
 
-class Camera {
+class CameraController {
 public:
-    ICameraSceneNode* entity;
+    Camera* entity;
 
-    Camera(Cursor& cursor);
+    CameraController(Cursor& cursor);
     void update(bool editing);
 
 private:
@@ -16,5 +16,6 @@ private:
     Cursor& cursor;
     float   distance;
     bool    was_editing;
-    dimension2du last_screen_size;
+    int     last_w;
+    int     last_h;
 };

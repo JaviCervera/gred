@@ -19,7 +19,6 @@ GridManager::GridManager(Grid& g, Cursor& cur,
     : grid(g), cursor(cur)
     , ceiling_tex(ceil_tex), wall_tex(wall_tex_), floor_tex(floor_tex_)
     , flag_mgr(fm), undo_mgr(um)
-    , lights(nullptr)
 {
     reset();
 }
@@ -36,19 +35,19 @@ void GridManager::reset() {
 }
 
 void GridManager::update() {
-    if (App::key_hit[KEY_RETURN]) editing = !editing;
-    if (App::key_hit[KEY_KEY_F])  grid.toggle_filtering();
-    if (App::key_hit[KEY_KEY_L])  toggle_lighting();
-    if (App::key_hit[KEY_KEY_R])  grid.toggle_wireframe();
-    if (App::key_hit[KEY_KEY_U])  cur_flag = std::max(1, cur_flag - 1);
-    if (App::key_hit[KEY_KEY_I])  cur_flag = std::min(100, cur_flag + 1);
-    if (App::key_hit[KEY_KEY_P])  place_flag();
-    if (App::key_hit[KEY_KEY_O])  delete_flag();
+    if (App::key_hit[GLFW_KEY_ENTER]) editing = !editing;
+    if (App::key_hit[GLFW_KEY_F])  grid.toggle_filtering();
+    if (App::key_hit[GLFW_KEY_L])  toggle_lighting();
+    if (App::key_hit[GLFW_KEY_R])  grid.toggle_wireframe();
+    if (App::key_hit[GLFW_KEY_U])  cur_flag = std::max(1, cur_flag - 1);
+    if (App::key_hit[GLFW_KEY_I])  cur_flag = std::min(100, cur_flag + 1);
+    if (App::key_hit[GLFW_KEY_P])  place_flag();
+    if (App::key_hit[GLFW_KEY_O])  delete_flag();
 
     if (editing) {
-        if (App::key_hit[KEY_F1]) reset();
+        if (App::key_hit[GLFW_KEY_F1]) reset();
 
-        if (App::key_hit[KEY_F2]) {
+        if (App::key_hit[GLFW_KEY_F2]) {
             std::string current = filename.value_or("");
             std::string selected = Dialogs::request_file("Grid filename", "*.grd", false, current);
             if (!selected.empty()) {
@@ -58,7 +57,7 @@ void GridManager::update() {
             }
         }
 
-        if (App::key_hit[KEY_F3]) {
+        if (App::key_hit[GLFW_KEY_F3]) {
             if (!filename.has_value()) {
                 std::string selected = Dialogs::request_file("Grid filename", "*.grd", true, "");
                 if (!selected.empty()) filename = selected;
@@ -67,15 +66,15 @@ void GridManager::update() {
                 GridSaver::save(grid, flag_mgr, filename.value());
         }
 
-        if (App::key_hit[KEY_F4]) {
+        if (App::key_hit[GLFW_KEY_F4]) {
             ++mode;
             if (mode > Grid::STAIRS_LEFT) mode = Grid::TILE;
         }
 
-        if (App::key_down[KEY_SPACE]) {
-            int cx = (int)std::round(App::entity_x(cursor.entity));
-            int cy = (int)std::round(App::entity_y(cursor.entity));
-            int cz = (int)std::round(App::entity_z(cursor.entity));
+        if (App::key_down[GLFW_KEY_SPACE]) {
+            int cx = (int)std::round(App::entity_x((Entity*)cursor.entity));
+            int cy = (int)std::round(App::entity_y((Entity*)cursor.entity));
+            int cz = (int)std::round(App::entity_z((Entity*)cursor.entity));
             auto cmd = std::make_shared<SetTileCommand>(
                 grid, cx, cy, cz, mode,
                 ceiling_tex.texture_name(),
@@ -84,10 +83,10 @@ void GridManager::update() {
             undo_mgr.add_undo(cmd->execute());
         }
 
-        if (App::key_down[KEY_DELETE]) {
-            int cx = (int)std::round(App::entity_x(cursor.entity));
-            int cy = (int)std::round(App::entity_y(cursor.entity));
-            int cz = (int)std::round(App::entity_z(cursor.entity));
+        if (App::key_down[GLFW_KEY_DELETE]) {
+            int cx = (int)std::round(App::entity_x((Entity*)cursor.entity));
+            int cy = (int)std::round(App::entity_y((Entity*)cursor.entity));
+            int cz = (int)std::round(App::entity_z((Entity*)cursor.entity));
             auto cmd = std::make_shared<RemoveTileCommand>(grid, cx, cy, cz);
             undo_mgr.add_undo(cmd->execute());
         }
@@ -95,30 +94,25 @@ void GridManager::update() {
 }
 
 void GridManager::toggle_lighting() {
-    if (!lighting_enabled()) {
-        lights = App::smgr->addEmptySceneNode();
-        auto* l1 = App::smgr->addLightSceneNode(lights, vector3df(0,0,0), SColorf(1,1,1,1));
-        auto* l2 = App::smgr->addLightSceneNode(lights, vector3df(0,0,0), SColorf(1,1,1,1));
-        auto* l3 = App::smgr->addLightSceneNode(lights, vector3df(0,0,0), SColorf(1,1,1,1));
-        l1->getLightData().Type = video::ELT_DIRECTIONAL;
-        l2->getLightData().Type = video::ELT_DIRECTIONAL;
-        l3->getLightData().Type = video::ELT_DIRECTIONAL;
-        App::set_entity_rotation(l2, 0.f, 180.f, 0.f);
-        App::set_entity_rotation(l3, 90.f,  0.f, 0.f);
-        App::set_ambient(COLOR_LIGHTGRAY);
+    bool on = !grid.lighting_enabled();
+    if (on) {
+        SetAmbientLightColor(COLOR_LIGHTGRAY);
+        SetSunColor(COLOR_WHITE);
+        SetSunPitch(45.f);
+        SetSunYaw(30.f);
     } else {
-        lights->remove();
-        lights = nullptr;
-        App::set_ambient(COLOR_WHITE);
+        SetAmbientLightColor(COLOR_WHITE);
+        SetSunColor(COLOR_BLACK);
     }
+    grid.set_lighting(on);
 }
 
-bool GridManager::lighting_enabled() const { return lights != nullptr; }
+bool GridManager::lighting_enabled() const { return grid.lighting_enabled(); }
 
 void GridManager::place_flag() {
-    int cx = (int)std::round(App::entity_x(cursor.entity));
-    int cy = (int)std::round(App::entity_y(cursor.entity));
-    int cz = (int)std::round(App::entity_z(cursor.entity));
+    int cx = (int)std::round(App::entity_x((Entity*)cursor.entity));
+    int cy = (int)std::round(App::entity_y((Entity*)cursor.entity));
+    int cz = (int)std::round(App::entity_z((Entity*)cursor.entity));
     auto cmd = std::make_shared<PlaceFlagCommand>(flag_mgr, cur_flag, cx, cy, cz);
     undo_mgr.add_undo(cmd->execute());
 }

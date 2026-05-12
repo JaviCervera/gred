@@ -8,13 +8,13 @@ Grid::Grid(int tx, int ty, int tz, const std::string& tp)
 }
 
 Grid::~Grid() {
-    if (model) model->remove();
+    if (model) FreeModel(model);
 }
 
 const std::string& Grid::get_texture_path() const { return tex_path; }
 
 void Grid::reset(int tx, int ty, int tz) {
-    if (model) { model->remove(); model = nullptr; }
+    if (model) { FreeModel(model); model = nullptr; }
     tiles.clear();
     tiles.resize(tx);
     for (int x = 0; x < tx; ++x) {
@@ -76,40 +76,37 @@ std::string Grid::floor_texture_name(int x, int y, int z) const {
 }
 
 void Grid::update_model() {
-    if (model) { model->remove(); model = nullptr; }
-    auto* mesh = GridMeshCreator::create(this);
-    model = App::smgr->addMeshSceneNode(mesh);
-    mesh->drop();
-    apply_filtering();
-    apply_wireframe();
+    if (model) { FreeModel(model); model = nullptr; }
+    Mesh* mesh = GridMeshCreator::create(this);
+    model = CreateModel(mesh, nullptr);
+    FreeMesh(mesh);
+    apply_lighting();
 }
 
 void Grid::toggle_filtering() {
     filtering = !filtering;
-    apply_filtering();
+    update_model();
 }
 
 bool Grid::filtering_enabled() const { return filtering; }
 
-void Grid::apply_filtering() {
-    if (!model) return;
-    int mode = filtering ? FILTER_ANISOTROPIC : FILTER_DISABLED;
-    for (u32 i = 0; i < model->getMaterialCount(); ++i)
-        App::set_material_filter_mode(model->getMaterial(i), mode);
-}
-
 void Grid::toggle_wireframe() {
-    if (model) {
-        wireframe = !wireframe;
-        apply_wireframe();
-    }
+    wireframe = !wireframe;
+    // No visual wireframe in Vortex — kept as no-op
 }
 
 bool Grid::wireframe_enabled() const { return wireframe; }
 
-void Grid::apply_wireframe() {
+void Grid::set_lighting(bool enabled) {
+    lighting = enabled;
+    apply_lighting();
+}
+
+bool Grid::lighting_enabled() const { return lighting; }
+
+void Grid::apply_lighting() {
     if (!model) return;
-    int mode = wireframe ? RENDER_WIREFRAME : RENDER_FILLED;
-    for (u32 i = 0; i < model->getMaterialCount(); ++i)
-        App::set_material_render_mode(model->getMaterial(i), mode);
+    u32_t n = GetNumEntityMaterials((Entity*)model);
+    for (u32_t i = 0; i < n; ++i)
+        SetMaterialLightingEnabled(GetEntityMaterial((Entity*)model, i), lighting ? TRUE : FALSE);
 }

@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.12)
 project(gred)
 
-# Build Irrlicht as a static library
-add_subdirectory(lib/irrlicht)
+set(VORTEX_SDK "${CMAKE_SOURCE_DIR}/../vortex-sdk")
 
 # Collect all source files
 file(GLOB GRED_SOURCES
     "src/*.cpp"
     "src/command/*.cpp"
 )
-list(APPEND GRED_SOURCES "lib/tinyfiledialogs/tinyfiledialogs.c")
+list(APPEND GRED_SOURCES
+    "lib/tinyfiledialogs/tinyfiledialogs.c"
+    "${VORTEX_SDK}/src/unity_build.cpp"
+)
 
 if (APPLE)
     add_executable(gred MACOSX_BUNDLE ${GRED_SOURCES})
@@ -23,11 +25,10 @@ set_target_properties(gred PROPERTIES
 )
 
 target_include_directories(gred PRIVATE
-    "lib/irrlicht/include"
+    "${VORTEX_SDK}/include"
+    "${VORTEX_SDK}/src/impl/contrib/glad_gles20/include"
     "lib/tinyfiledialogs"
 )
-
-target_compile_definitions(gred PRIVATE _IRR_STATIC_LIB_)
 
 # Set output directory
 set_target_properties(gred PROPERTIES
@@ -38,16 +39,20 @@ set_target_properties(gred PROPERTIES
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     if (MSVC)
         target_compile_definitions(gred PRIVATE _CRT_SECURE_NO_WARNINGS WIN32)
+        target_link_libraries(gred "${VORTEX_SDK}/examples/glfw3/glfw3.dll")
     else()
         # MinGW
         target_compile_definitions(gred PRIVATE DISABLE_SIMD WIN32)
         target_compile_options(gred PRIVATE -Wno-unused-parameter)
-        set_target_properties(gred PROPERTIES LINK_FLAGS "-s -static -mwindows")
-        target_link_libraries(gred Irrlicht opengl32 gdi32 winmm)
+        set_target_properties(gred PROPERTIES LINK_FLAGS "-s -mwindows")
+        target_link_libraries(gred
+            "-L${VORTEX_SDK}/examples/glfw3" "-l:glfw3.dll"
+            opengl32 gdi32 winmm
+        )
     endif()
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     target_compile_options(gred PRIVATE -DGL_SILENCE_DEPRECATION)
-    target_link_libraries(gred Irrlicht
+    target_link_libraries(gred glfw
         "-framework Cocoa"
         "-framework IOKit"
         "-framework OpenGL"
@@ -75,11 +80,11 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     )
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     target_compile_options(gred PRIVATE -fPIC)
-    target_link_libraries(gred Irrlicht GL X11 Xxf86vm)
+    target_link_libraries(gred GL glfw)
     add_custom_command(TARGET gred POST_BUILD
         COMMAND strip $<TARGET_FILE:gred>
         COMMENT "Stripping gred"
     )
 else()
-    target_link_libraries(gred Irrlicht)
+    target_link_libraries(gred glfw)
 endif()

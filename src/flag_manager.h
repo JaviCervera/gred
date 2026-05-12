@@ -10,7 +10,7 @@ public:
     FlagManager();
 
     void update(std::optional<int> active_flag);
-    void draw_flag_numbers(ICameraSceneNode* cam);
+    void draw_flag_numbers(Camera* cam);
     void clear();
     void place(int flag_id, float x, float y, float z);
     void remove(int flag_id);

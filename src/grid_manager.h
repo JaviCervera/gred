@@ -37,5 +37,4 @@ private:
     int             mode;
     int             cur_flag;
     std::optional<std::string> filename;
-    ISceneNode*     lights;
 };

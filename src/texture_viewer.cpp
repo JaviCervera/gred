@@ -2,7 +2,7 @@
 #include <algorithm>
 
 TextureViewer::TextureViewer(const std::vector<std::string>& names_, int selected_,
-                             const std::string& path_, EKEY_CODE pk, EKEY_CODE nk)
+                             const std::string& path_, int pk, int nk)
     : names(names_), path(path_), prev_key(pk), next_key(nk)
 {
     selected = std::min(std::max(selected_, 1), (int)names.size());
@@ -18,7 +18,7 @@ void TextureViewer::draw(int x, int y, int w, int h) const {
     if (tex) App::draw_texture_ex(tex, x, y, w, h, COLOR_WHITE);
 }
 
-ITexture* TextureViewer::texture() const { return tex; }
+Texture* TextureViewer::texture() const { return tex; }
 
 const std::string& TextureViewer::texture_name() const {
     static std::string empty;
@@ -41,5 +41,5 @@ void TextureViewer::prev_texture() {
 void TextureViewer::reload_texture() {
     if (names.empty()) { tex = nullptr; return; }
     std::string full = path + names[selected - 1];
-    tex = App::driver->getTexture(full.c_str());
+    tex = CacheTexture(full.c_str(), FILTER_LINEAR);
 }

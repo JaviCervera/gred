@@ -1,4 +1,5 @@
 #include "grid_loader.h"
+#include <cstdio>
 #include <cstring>
 
 // ---------------------------------------------------------------------------
@@ -7,12 +8,14 @@ class BinaryReader {
     size_t pos = 0;
 public:
     bool load(const std::string& filename) {
-        auto* file = App::device->getFileSystem()->createAndOpenFile(filename.c_str());
-        if (!file) return false;
-        long sz = file->getSize();
+        FILE* f = fopen(filename.c_str(), "rb");
+        if (!f) return false;
+        fseek(f, 0, SEEK_END);
+        long sz = ftell(f);
+        rewind(f);
         data.resize((size_t)sz);
-        file->read(data.data(), sz);
-        file->drop();
+        fread(data.data(), 1, (size_t)sz, f);
+        fclose(f);
         return true;
     }
     uint8_t read_byte() { return data[pos++]; }

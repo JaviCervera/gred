@@ -3,8 +3,8 @@
 
 class Flag {
 public:
-    int                  id;
-    IBillboardSceneNode* entity;
+    int     id;
+    Sprite* entity;
 
     Flag(int id, float x, float y, float z);
     ~Flag() = default;
@@ -18,6 +18,6 @@ public:
 
 private:
     bool active = false;
-    static ITexture* active_texture;
-    static ITexture* inactive_texture;
+    static Texture* active_texture;
+    static Texture* inactive_texture;
 };

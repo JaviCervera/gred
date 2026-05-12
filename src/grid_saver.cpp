@@ -1,4 +1,5 @@
 #include "grid_saver.h"
+#include <cstdio>
 #include <algorithm>
 
 // ---------------------------------------------------------------------------
@@ -17,11 +18,11 @@ public:
         for (char c : s) write_byte((uint8_t)c);
     }
     bool save(const std::string& filename) {
-        auto* file = App::device->getFileSystem()->createAndWriteFile(filename.c_str());
-        if (!file) return false;
+        FILE* f = fopen(filename.c_str(), "wb");
+        if (!f) return false;
         if (!data.empty())
-            file->write(data.data(), (u32)data.size());
-        file->drop();
+            fwrite(data.data(), 1, data.size(), f);
+        fclose(f);
         return true;
     }
 };
