@@ -36,3 +36,4 @@
 _cmake
 _build/gred
 _build/gred.app
+!_build/glfw3.dll

@@ -27,6 +27,7 @@ set_target_properties(gred PROPERTIES
 target_include_directories(gred PRIVATE
     "${VORTEX_SDK}/include"
     "${VORTEX_SDK}/src/impl/contrib/glad_gles20/include"
+    "lib/glfw3/include"
     "lib/tinyfiledialogs"
 )
 
@@ -39,14 +40,14 @@ set_target_properties(gred PROPERTIES
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     if (MSVC)
         target_compile_definitions(gred PRIVATE _CRT_SECURE_NO_WARNINGS WIN32)
-        target_link_libraries(gred "${VORTEX_SDK}/examples/glfw3/glfw3.dll")
+        target_link_libraries(gred "_build/glfw3.dll")
     else()
         # MinGW
         target_compile_definitions(gred PRIVATE DISABLE_SIMD WIN32)
-        target_compile_options(gred PRIVATE -Wno-unused-parameter)
-        set_target_properties(gred PROPERTIES LINK_FLAGS "-s -mwindows")
+        target_compile_options(gred PRIVATE -Wno-unused-parameter -m32)
+        set_target_properties(gred PROPERTIES LINK_FLAGS "-s -mwindows -m32")
         target_link_libraries(gred
-            "-L${VORTEX_SDK}/examples/glfw3" "-l:glfw3.dll"
+            "-L${CMAKE_SOURCE_DIR}/_build" "-l:glfw3.dll"
             opengl32 gdi32 winmm
         )
     endif()
