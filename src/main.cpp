@@ -190,17 +190,19 @@ int main(int argc, char **argv)
 
             App::draw_text("[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " + grid_mgr.mode_name() + " -- [ENTER] Preview", 8, 8, COLOR_WHITE);
 
-            App::draw_text(
-                "[F] " + enable_disable(grid.filtering_enabled()) + " texture filtering -- "
-                                                                    "[L] " +
-                    enable_disable(grid_mgr.lighting_enabled()) + " lighting -- "
-                                                                  "[R] " +
-                    enable_disable(grid.wireframe_enabled()) + " wireframe",
-                8, 24, COLOR_WHITE);
+            App::draw_text(std::string() +
+                               "[F] " + enable_disable(grid.filtering_enabled()) + " texture filtering -- " +
+                               "[L] " + enable_disable(grid_mgr.lighting_enabled()) + " lighting -- " +
+                               "[R] " + enable_disable(grid.wireframe_enabled()) + " wireframe",
+                           8, 24, COLOR_WHITE);
 
             App::draw_text(
                 "[U/I] Select flag number (current: " + std::to_string(grid_mgr.current_flag()) + ") -- [P] Place flag -- [O] Delete flag",
                 8, 40, COLOR_WHITE);
+
+            App::draw_text(
+                "[J/K] Select tile height (current: " + std::to_string(cursor.tile_height()) + ")",
+                8, 56, COLOR_WHITE);
 
             int cx = (int)std::round(App::entity_x(cursor.entity));
             int cy = (int)std::round(App::entity_y(cursor.entity));

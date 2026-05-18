@@ -13,12 +13,12 @@ struct TileData {
 
 class Grid {
 public:
-    static const int EMPTY           = 0;
-    static const int TILE            = 1;
-    static const int STAIRS_FORWARD  = 2;
-    static const int STAIRS_RIGHT    = 3;
-    static const int STAIRS_BACKWARDS = 4;
-    static const int STAIRS_LEFT     = 5;
+    static constexpr int EMPTY           = 0;
+    static constexpr int TILE            = 1;
+    static constexpr int STAIRS_FORWARD  = 2;
+    static constexpr int STAIRS_RIGHT    = 3;
+    static constexpr int STAIRS_BACKWARDS = 4;
+    static constexpr int STAIRS_LEFT     = 5;
 
     Grid(int tx, int ty, int tz, const std::string& tex_path);
     ~Grid();
