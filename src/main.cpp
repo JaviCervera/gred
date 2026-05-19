@@ -188,7 +188,7 @@ int main(int argc, char **argv)
             wall_tex.draw(sw - 144, 160, 128, 128);
             floor_tex.draw(sw - 144, 304, 128, 128);
 
-            App::draw_text("[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " + grid_mgr.mode_name() + " -- [ENTER] Preview", 8, 8, COLOR_WHITE);
+            App::draw_text("[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " + grid_mgr.mode_name() + " -- [F5] Export OBJ -- [ENTER] Preview", 8, 8, COLOR_WHITE);
 
             App::draw_text(std::string() +
                                "[F] " + enable_disable(grid.filtering_enabled()) + " texture filtering -- " +

@@ -37,6 +37,7 @@ public:
     std::string ceiling_texture_name(int x, int y, int z) const;
     std::string wall_texture_name(int x, int y, int z) const;
     std::string floor_texture_name(int x, int y, int z) const;
+    IMesh* get_mesh() const;
     void update_model();
     void toggle_filtering();
     bool filtering_enabled() const;

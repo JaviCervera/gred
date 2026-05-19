@@ -84,6 +84,10 @@ void Grid::update_model() {
     apply_wireframe();
 }
 
+IMesh* Grid::get_mesh() const {
+    return model ? model->getMesh() : nullptr;
+}
+
 void Grid::toggle_filtering() {
     filtering = !filtering;
     apply_filtering();

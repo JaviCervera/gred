@@ -11,13 +11,20 @@
 #include <algorithm>
 #include <cmath>
 
+static std::string replace_extension(const std::string &path, const std::string &new_ext)
+{
+    auto dot = path.rfind('.');
+    std::string base = (dot != std::string::npos) ? path.substr(0, dot) : path;
+    return base + new_ext;
+}
+
 static const std::string MODE_NAMES[] = {
     "Tile", "Stairs Forward", "Stairs Right", "Stairs Backwards", "Stairs Left"};
 
 GridManager::GridManager(Grid &g, Cursor &cur,
                          TextureViewer &ceil_tex, TextureViewer &wall_tex_, TextureViewer &floor_tex_,
                          FlagManager &fm, UndoManager &um)
-    : grid(g), cursor(cur), ceiling_tex(ceil_tex), wall_tex(wall_tex_), floor_tex(floor_tex_), flag_mgr(fm), undo_mgr(um), lights(nullptr)
+    : grid(g), cursor(cur), ceiling_tex(ceil_tex), wall_tex(wall_tex_), floor_tex(floor_tex_), flag_mgr(fm), undo_mgr(um), lights(nullptr), obj_exporter(App::device)
 {
     reset();
 }
@@ -87,6 +94,12 @@ void GridManager::update()
             ++mode;
             if (mode > Grid::STAIRS_LEFT)
                 mode = Grid::TILE;
+        }
+
+        if (App::key_hit[KEY_F5] && filename.has_value())
+        {
+            const std::string obj_path = replace_extension(filename.value(), ".obj");
+            obj_exporter.export_mesh(grid.get_mesh(), obj_path);
         }
 
         if (App::key_down[KEY_SPACE])

@@ -5,6 +5,7 @@
 #include "texture_viewer.h"
 #include "flag_manager.h"
 #include "undo_manager.h"
+#include "grid_obj_exporter.h"
 #include <string>
 #include <optional>
 
@@ -38,4 +39,5 @@ private:
     int             cur_flag;
     std::optional<std::string> filename;
     ISceneNode*     lights;
+    GridOBJExporter obj_exporter;
 };
