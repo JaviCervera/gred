@@ -99,7 +99,10 @@ void GridManager::update()
         if (App::key_hit[KEY_F5] && filename.has_value())
         {
             const std::string obj_path = replace_extension(filename.value(), ".obj");
-            obj_exporter.export_mesh(grid.get_mesh(), obj_path);
+            if (obj_exporter.export_mesh(grid.get_mesh(), obj_path))
+                Dialogs::notify("Export successful", "Mesh exported to " + obj_path, false);
+            else
+                Dialogs::notify("Export failed", "Failed to export mesh to " + obj_path, true);
         }
 
         if (App::key_down[KEY_SPACE])

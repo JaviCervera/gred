@@ -1,6 +1,8 @@
 #pragma once
+
 #include "app.h"
 #include "grid.h"
+#include <cstdint>
 
 class Cursor
 {
