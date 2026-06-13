@@ -84,8 +84,13 @@ class GridManager {
 			}
 			if (Cs.keyHit(Cs.KEY_F5) && filename != null) {
 				final mesh = grid.getMesh();
-				if (mesh != null)
-					Cs.saveMesh(mesh, Cs.stripExt(filename) + ".obj");
+				if (mesh != null) {
+					final objPath = Cs.stripExt(filename) + ".obj";
+					if (Cs.saveMesh(mesh, objPath))
+						Dialogs.notify("Export successful", "Mesh exported to " + objPath, false);
+					else
+						Dialogs.notify("Export failed", "Failed to export mesh to " + objPath, true);
+				}
 			}
 			if (Cs.keyDown(Cs.KEY_SPACE)) {
 				final cx = Cs.int(Cs.entityX(cursor.entity));

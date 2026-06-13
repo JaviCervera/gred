@@ -488,7 +488,7 @@ extern class ITerrainSceneNode extends ISceneNode {}
 	@:native("MeshWidth") public static function meshWidth(mesh:IMesh):Float;
 	@:native("MeshHeight") public static function meshHeight(mesh:IMesh):Float;
 	@:native("MeshDepth") public static function meshDepth(mesh:IMesh):Float;
-	@:native("SaveMesh") public static function saveMesh(mesh:IMesh, filename:String):Void;
+	@:native("SaveMesh") public static function saveMesh(mesh:IMesh, filename:String):Bool;
 	@:native("CreateConeModel") public static function createConeModel(segments:Int):IMeshSceneNode;
 	@:native("CreateCubeModel") public static function createCubeModel():IMeshSceneNode;
 	@:native("CreateCylinderModel") public static function createCylinderModel(segments:Int):IMeshSceneNode;
