@@ -82,6 +82,11 @@ class GridManager {
 				if (mode > Grid.STAIRS_LEFT)
 					mode = Grid.TILE;
 			}
+			if (Cs.keyHit(Cs.KEY_F5) && filename != null) {
+				final mesh = grid.getMesh();
+				if (mesh != null)
+					Cs.saveMesh(mesh, Cs.stripExt(filename) + ".obj");
+			}
 			if (Cs.keyDown(Cs.KEY_SPACE)) {
 				final cx = Cs.int(Cs.entityX(cursor.entity));
 				final cy0 = Cs.int(Cs.entityY(cursor.entity));

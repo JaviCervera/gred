@@ -36,7 +36,7 @@ class Main {
 				ceilingTexViewer.draw(Cs.screenWidth() - 144, 16, 128, 128);
 				wallTexViewer.draw(Cs.screenWidth() - 144, 160, 128, 128);
 				floorTexViewer.draw(Cs.screenWidth() - 144, 304, 128, 128);
-				Cs.drawText(null, "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " + gridMgr.getModeName() + " -- [ENTER] Preview", 8, 8, Cs.COLOR_WHITE);
+				Cs.drawText(null, "[F1] New -- [F2] Load -- [F3] Save -- [F4] Mode: " + gridMgr.getModeName() + " -- [F5] Export OBJ -- [ENTER] Preview", 8, 8, Cs.COLOR_WHITE);
 				Cs.drawText(null,
 					"[F] "
 					+ enableDisableText(grid.filteringEnabled())

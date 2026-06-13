@@ -344,7 +344,7 @@ extern class ITerrainSceneNode extends ISceneNode {}
 	@:native("EntityGroup") public static function entityGroup(entity:ISceneNode):Int;
 	@:native("EntityDistance") public static function entityDistance(entity:ISceneNode, x:Float, y:Float, z:Float):Float;
 	@:native("EntitySquareDistance") public static function entitySquareDistance(entity:ISceneNode, x:Float, y:Float, z:Float):Float;
-	@:native("LoadFont") public static function loadFont(filename:String, height:Int):Font;
+	@:native("LoadFont") public static function loadFont(filename:String):Font;
 	@:native("FreeFont") public static function freeFont(font:Font):Void;
 	@:native("DrawText") public static function drawText(font:Font, text:String, x:Int, y:Int, color:Int):Void;
 	@:native("TextWidth") public static function textWidth(font:Font, text:String):Int;
@@ -488,6 +488,7 @@ extern class ITerrainSceneNode extends ISceneNode {}
 	@:native("MeshWidth") public static function meshWidth(mesh:IMesh):Float;
 	@:native("MeshHeight") public static function meshHeight(mesh:IMesh):Float;
 	@:native("MeshDepth") public static function meshDepth(mesh:IMesh):Float;
+	@:native("SaveMesh") public static function saveMesh(mesh:IMesh, filename:String):Void;
 	@:native("CreateConeModel") public static function createConeModel(segments:Int):IMeshSceneNode;
 	@:native("CreateCubeModel") public static function createCubeModel():IMeshSceneNode;
 	@:native("CreateCylinderModel") public static function createCylinderModel(segments:Int):IMeshSceneNode;

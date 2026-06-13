@@ -118,6 +118,10 @@ class Grid {
 		return tiles[x - 1][y - 1][z - 1].floor;
 	}
 
+	public function getMesh():Null<IMesh> {
+		return (model != null) ? Cs.modelMesh(model) : null;
+	}
+
 	public function _updateModel():Void {
 		if (model != null)
 			Cs.freeEntity(model);
