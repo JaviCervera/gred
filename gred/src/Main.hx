@@ -48,12 +48,15 @@ class Main {
 					+ enableDisableText(grid.wireframeEnabled())
 					+ " wireframe",
 					8, 24, Cs.COLOR_WHITE);
-				Cs.drawText(null, "[U/I] Select flag number (current: "
-					+ gridMgr.getCurrentFlag()
-					+ ") -- "
-					+ "[P] Place flag -- "
-					+ "[O] Delete flag", 8,
-					40, Cs.COLOR_WHITE);
+			Cs.drawText(null, "[U/I] Select flag number (current: "
+				+ gridMgr.getCurrentFlag()
+				+ ") -- "
+				+ "[P] Place flag -- "
+				+ "[O] Delete flag", 8,
+				40, Cs.COLOR_WHITE);
+				Cs.drawText(null, "[J/K] Select tile height (current: "
+					+ cursor.tileHeight()
+					+ ")", 8, 56, Cs.COLOR_WHITE);
 				Cs.drawText(null,
 					"Cursor Position "
 					+ Cs.int(Cs.entityX(cursor.entity))

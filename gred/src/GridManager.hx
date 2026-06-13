@@ -1,3 +1,4 @@
+import command.CompositeCommand;
 import command.SetTileCommand;
 import command.RemoveTileCommand;
 import command.PlaceFlagCommand;
@@ -82,9 +83,16 @@ class GridManager {
 					mode = Grid.TILE;
 			}
 			if (Cs.keyDown(Cs.KEY_SPACE)) {
-				undoMgr.addUndo(new SetTileCommand(grid, Cs.int(Cs.entityX(cursor.entity)), Cs.int(Cs.entityY(cursor.entity)),
-					Cs.int(Cs.entityZ(cursor.entity)), mode, ceilingTexRetriever.textureName(), wallTexRetriever.textureName(),
-					floorTexRetriever.textureName()).execute());
+				final cx = Cs.int(Cs.entityX(cursor.entity));
+				final cy0 = Cs.int(Cs.entityY(cursor.entity));
+				final cy1 = cy0 + cursor.tileHeight();
+				final cz = Cs.int(Cs.entityZ(cursor.entity));
+				final commands = new CompositeCommand();
+				for (cy in cy0...cy1) {
+					commands.addCommand(new SetTileCommand(grid, cx, cy, cz, (cy == cy0) ? mode : Grid.TILE,
+						ceilingTexRetriever.textureName(), wallTexRetriever.textureName(), floorTexRetriever.textureName()));
+				}
+				undoMgr.addUndo(commands.execute());
 			}
 			if (Cs.keyDown(Cs.KEY_DELETE)) {
 				undoMgr.addUndo(new RemoveTileCommand(grid, Cs.int(Cs.entityX(cursor.entity)), Cs.int(Cs.entityY(cursor.entity)),

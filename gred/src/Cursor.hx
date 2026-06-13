@@ -4,11 +4,13 @@ class Cursor {
 	private final grid:Grid;
 	private var alpha:Float;
 	private var alphaDir:Float;
+	private var _tileHeight:Int;
 
 	public function new(grid:Grid) {
 		this.grid = grid;
 		alpha = 0.5;
 		alphaDir = 1;
+		_tileHeight = 1;
 		var mesh = Cs.createCubeMesh();
 		entity = Cs.createModel(mesh);
 		Cs.freeMesh(mesh);
@@ -17,6 +19,10 @@ class Cursor {
 		Cs.setMaterialFlag(mat, Cs.FLAG_LIGHTING, false);
 		Cs.setMaterialFlag(mat, Cs.FLAG_VERTEXCOLORS, true);
 		reset();
+	}
+
+	public function tileHeight():Int {
+		return _tileHeight;
 	}
 
 	public function reset():Void {
@@ -49,6 +55,10 @@ class Cursor {
 				Cs.translateEntity(entity, 0, 1, 0);
 			if (Cs.keyHit(Cs.KEY_A))
 				Cs.translateEntity(entity, 0, -1, 0);
+			if (Cs.keyHit(Cs.KEY_J))
+				_tileHeight = Cs.int(Cs.max(1, _tileHeight - 1));
+			if (Cs.keyHit(Cs.KEY_K))
+				_tileHeight = Cs.int(Cs.min(8, _tileHeight + 1));
 			Cs.setEntityPosition(entity, Cs.clamp(Cs.entityX(entity), 1, grid.tilesX()), Cs.clamp(Cs.entityY(entity), 1, grid.tilesY()),
 				Cs.clamp(Cs.entityZ(entity), 1, grid.tilesZ()));
 		}
