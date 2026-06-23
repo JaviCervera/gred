@@ -16,7 +16,7 @@ class GridManager {
 	private var mode:Int;
 	private var currentFlag:Int;
 	private var filename:Null<String>;
-	private var lights:Null<ISceneNode>;
+	private var lights:Null<Entity>;
 
 	public function new(grid:Grid, cursor:Cursor, ceilingTexRetriever:TextureViewer, wallTexRetriever:TextureViewer, floorTexRetriever:TextureViewer,
 			flagMgr:FlagManager, undoMgr:UndoManager) {

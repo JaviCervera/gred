@@ -1,9 +1,9 @@
 class Flag {
-	private static var activeTexture:Null<ITexture> = null;
-	private static var inactiveTexture:Null<ITexture> = null;
+	private static var activeTexture:Null<Texture> = null;
+	private static var inactiveTexture:Null<Texture> = null;
 
 	public final id:Int;
-	public final entity:IBillboardSceneNode;
+	public final entity:Sprite;
 
 	private var active:Bool;
 

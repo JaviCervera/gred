@@ -1,7 +1,7 @@
 package grid_mesh;
 
 class StairMeshCreator {
-	public static function create(x:Float, y:Float, z:Float, yaw:Float):IMesh {
+	public static function create(x:Float, y:Float, z:Float, yaw:Float):Mesh {
 		final surf = new GridSurface();
 		addStepWall(0, 0, 0.25, surf);
 		addStepWall(0, 0.25, 0.5, surf);

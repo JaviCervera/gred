@@ -16,7 +16,7 @@ class Main {
 		final flagMgr = new FlagManager();
 		final undoMgr = new UndoManager();
 		final gridMgr = new GridManager(grid, cursor, ceilingTexViewer, wallTexViewer, floorTexViewer, flagMgr, undoMgr);
-		final cam = new Camera(cursor);
+		final cam = new Cam(cursor);
 
 		while (!Cs.screenShouldClose()) {
 			undoMgr.update();

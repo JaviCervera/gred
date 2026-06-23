@@ -1,5 +1,5 @@
 class Cursor {
-	public final entity:IMeshSceneNode;
+	public final entity:Model;
 
 	private final grid:Grid;
 	private var alpha:Float;

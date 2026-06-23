@@ -6,7 +6,7 @@ class GridMeshCreator {
 	private final surfs:Map<String, GridSurface>;
 	private final grid:Grid;
 
-	public static function create(grid:Grid):IMesh {
+	public static function create(grid:Grid):Mesh {
 		final creator = new GridMeshCreator(grid);
 		final mesh = Cs.createMesh();
 		for (s in creator.surfs) {

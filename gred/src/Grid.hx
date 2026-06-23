@@ -10,7 +10,7 @@ class Grid {
 
 	private final texPath:String;
 	private var tiles:Array<Array<Array<Null<TileData>>>>;
-	private var model:Null<IMeshSceneNode>;
+	private var model:Null<Model>;
 	private var filtering:Bool;
 	private var wireframe:Bool;
 
@@ -118,7 +118,7 @@ class Grid {
 		return tiles[x - 1][y - 1][z - 1].floor;
 	}
 
-	public function getMesh():Null<IMesh> {
+	public function getMesh():Null<Mesh> {
 		return (model != null) ? Cs.modelMesh(model) : null;
 	}
 

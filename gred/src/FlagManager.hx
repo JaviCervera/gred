@@ -25,7 +25,7 @@ class FlagManager {
 		}
 	}
 
-	public function drawFlagNumbers(font:Font, cam:ICameraSceneNode):Void {
+	public function drawFlagNumbers(font:Font, cam:Camera):Void {
 		for (flag in lst) {
 			Cs.worldToScreen(cam, Cs.entityX(flag.entity), Cs.entityY(flag.entity), Cs.entityZ(flag.entity));
 			var label = Std.string(flag.id);

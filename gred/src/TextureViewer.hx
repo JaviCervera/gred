@@ -4,7 +4,7 @@ class TextureViewer {
 	private final prevKey:Int;
 	private final nextKey:Int;
 	private var selected:Int;
-	private var tex:Null<ITexture>;
+	private var tex:Null<Texture>;
 
 	public function new(textureNames:Array<String>, selected:Int, path:String, prevKey:Int, nextKey:Int) {
 		names = textureNames;
@@ -28,7 +28,7 @@ class TextureViewer {
 			Cs.drawTextureEx(tex, x, y, width, height, Cs.COLOR_WHITE);
 	}
 
-	public function texture():Null<ITexture> {
+	public function texture():Null<Texture> {
 		return tex;
 	}
 

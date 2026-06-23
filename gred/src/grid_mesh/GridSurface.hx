@@ -36,7 +36,7 @@ class GridSurface {
 		return idxs[i];
 	}
 
-	public function addToMesh(mesh:IMesh):IMeshBuffer {
+	public function addToMesh(mesh:Mesh):Surface {
 		final vertices = verticesMemblock();
 		final indices = indicesMemblock();
 		final surf = Cs.addSurface(mesh, vertices, numVertices(), indices, numIndices(), Cs.SURFACE_STANDARD);

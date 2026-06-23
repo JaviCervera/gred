@@ -1,8 +1,8 @@
-class Camera {
+class Cam {
 	private static inline final MOVE_SPEED = 2.0;
 	private static inline final TURN_SPEED = 90.0;
 
-	public final entity:ICameraSceneNode;
+	public final entity:Camera;
 
 	private final cursor:Cursor;
 	private var distance:Float;
